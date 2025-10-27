@@ -13,10 +13,10 @@ public class PlayerController : MonoBehaviour {
 	private float maxTime = 1f;
 	[SerializeField]
 	private GameObject ballPrefab;
-	
+
 	[SerializeField]
 	private bool debugMode = false;
-	
+
 	private GameManager _gameManager;
 	private bool _isDragging;
 	private float _startY;
@@ -25,40 +25,81 @@ public class PlayerController : MonoBehaviour {
 	private bool _cooldown;
 
 
-	void Update() {
-		if (_cooldown) return;
-
-		if (!debugMode) {
-			if (Input.GetMouseButtonDown(0)) {
-				_isDragging = true;
-				_startY = Input.mousePosition.y;
-			}
-
-			// Quando rilasci il click
-			if (Input.GetMouseButtonUp(0) || _timer >= maxTime) {
-				_isDragging = false;
-				_cooldown = true;
-				StartCoroutine(ResetSlider());
-				Shoot();
-			}
-
-			// Durante il drag
-			if (_isDragging) {
-				_endY = Mathf.Max(Input.mousePosition.y, _endY);
-				slider.value = (_endY - _startY) * sensitivity;
-			}
-		} else {
-			if (Input.GetMouseButtonDown(0)) {
-				Shoot();
-			} else if (Input.GetMouseButtonDown(1)) {
-				ShootBank();
-			}
-		}
-	}
-
 	private void Start() {
 		_gameManager = GameManager.Instance;
 	}
+
+
+	private void Update() {
+		if (_cooldown) return;
+
+		HandleInput();
+		if (_isDragging) {
+			_timer += Time.deltaTime;
+			slider.value = (_endY - _startY) * sensitivity;
+		}
+	}
+
+	#region Input
+
+	private void HandleInput() {
+		if (Input.GetMouseButtonDown(0)) {
+			StartDrag(Input.mousePosition.y);
+		} else if (Input.GetMouseButton(0)) {
+			UpdateDrag(Input.mousePosition.y);
+		} else if (Input.GetMouseButtonUp(0)) {
+			EndDrag();
+		}
+
+		if (Input.touchCount > 0) {
+			var touch = Input.GetTouch(0);
+			switch (touch.phase) {
+				case TouchPhase.Began:
+					StartDrag(touch.position.y);
+					break;
+
+				case TouchPhase.Moved:
+				case TouchPhase.Stationary:
+					UpdateDrag(touch.position.y);
+					break;
+
+				case TouchPhase.Ended:
+				case TouchPhase.Canceled:
+					EndDrag();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		if (_isDragging && _timer >= maxTime)
+			EndDrag();
+	}
+
+	private void StartDrag(float startY) {
+		_isDragging = true;
+		_timer = 0f;
+		_startY = startY;
+		_endY = startY;
+	}
+
+	private void UpdateDrag(float currentY) {
+		if (!_isDragging) return;
+		_endY = Mathf.Max(currentY, _endY);
+	}
+
+	private void EndDrag() {
+		if (!_isDragging) return;
+
+		_isDragging = false;
+		_cooldown = true;
+		StartCoroutine(ResetSlider());
+		Shoot();
+	}
+
+	#endregion
+
+	#region Shoot
 
 	public void Shoot() {
 		if (!ballPrefab) {
@@ -70,12 +111,12 @@ public class PlayerController : MonoBehaviour {
 		ballClone.tag = "PlayerBall";
 		ballClone.transform.GetChild(0).tag = "PlayerBall";
 		var ballrb = ballClone.GetComponent<Rigidbody>();
-		
+
 		ballrb.velocity = Vector3.zero;
 		ballrb.angularVelocity = Vector3.zero;
 		ballrb.AddForce(_gameManager.directShotVelocity * ballrb.mass, ForceMode.Impulse);
 	}
-	
+
 	public void ShootBank() {
 		if (!ballPrefab) {
 			Debug.LogWarning("BallPrefab not found");
@@ -86,14 +127,14 @@ public class PlayerController : MonoBehaviour {
 		ballClone.tag = "PlayerBall";
 		ballClone.transform.GetChild(0).tag = "PlayerBall";
 		var ballrb = ballClone.GetComponent<Rigidbody>();
-		
+
 		ballrb.velocity = Vector3.zero;
 		ballrb.angularVelocity = Vector3.zero;
 		ballrb.AddForce(_gameManager.indirectShotVelocity * ballrb.mass, ForceMode.Impulse);
 	}
+
+	#endregion
 	
-
-
 	public IEnumerator ResetSlider() {
 		yield return new WaitForSeconds(0.5f);
 		slider.value = 0;
