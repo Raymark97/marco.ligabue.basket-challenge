@@ -1532,7 +1532,7 @@ MonoBehaviour:
   hoop: {fileID: 474694065}
   backboard: {fileID: 1530694750}
   detector: {fileID: 732917863}
-  speed: 10
+  uiManager: {fileID: 1570999419}
   maxHeight: 4
 --- !u!4 &1222695976
 Transform:
@@ -1777,6 +1777,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2df9ca6fa06aa4bb912eef3a3be43e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerScore: {fileID: 438196574}
+  NPCScore: {fileID: 1813443110}
+  fireSlider: {fileID: 208384652}
+  shootSlider: {fileID: 331940275}
 --- !u!1 &1782940065
 GameObject:
   m_ObjectHideFlags: 0

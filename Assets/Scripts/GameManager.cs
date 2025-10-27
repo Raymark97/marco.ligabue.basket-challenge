@@ -17,22 +17,22 @@ public class GameManager : MonoBehaviour {
 	private Transform _player;
 	private Transform _npc;
 
-	private int playerPoints;
+	private int _playerPoints;
 
 	private int PlayerPoints {
 		set {
-			playerPoints = value;
+			_playerPoints = value;
 			uiManager.SetPlayerPoints(value);
 		}
-		get => playerPoints;
+		get => _playerPoints;
 	}
-	private int npcPoints;
+	private int _npcPoints;
 	private int NPCPoints {
 		set {
-			npcPoints = value;
+			_npcPoints = value;
 			uiManager.SetNPCPoints(value);
 		}
-		get => npcPoints;
+		get => _npcPoints;
 	}
 
 	[Header("Shot tuning")]
@@ -62,8 +62,8 @@ public class GameManager : MonoBehaviour {
 		if (!CalculateBankShot(_player, out indirectShotVelocity)) {
 			Debug.LogWarning("Unable to find indirect shot");
 		}
-		
-		//TODO calculate npc shots and indirect shots
+
+		//TODO calculate npc shots shots
 	}
 
 	private bool CalculateDirectShot(Transform startPoint, out Vector3 launchVelocity) {
@@ -113,9 +113,9 @@ public class GameManager : MonoBehaviour {
 		var boardNormal = backboard.forward;
 		var hoopToBoard = hoop.position - backboard.position;
 		var distToPlane = Vector3.Dot(hoopToBoard, boardNormal);
-		
+
 		var reflectedHoop = hoop.position - 2f * distToPlane * boardNormal;
-		
+
 		var toTarget = reflectedHoop - startPoint.position;
 		var toTargetXZ = new Vector3(toTarget.x, 0f, toTarget.z);
 		var distance = toTargetXZ.magnitude;
@@ -123,14 +123,14 @@ public class GameManager : MonoBehaviour {
 
 		var gravity = Mathf.Abs(Physics.gravity.y);
 
-		
+
 		if (maxHeight <= Mathf.Max(startY, reflectedHoop.y)) {
 			Debug.LogWarning("maxHeight too low to reach the reflected hoop.");
 			return false;
 		}
-		
+
 		var vy = Mathf.Sqrt(2f * gravity * (maxHeight - startY));
-		
+
 		var timeUp = vy / gravity;
 		var fallDistance = maxHeight - reflectedHoop.y;
 		if (fallDistance < 0f)
@@ -138,10 +138,10 @@ public class GameManager : MonoBehaviour {
 
 		var timeDown = Mathf.Sqrt(2f * fallDistance / gravity);
 		var totalTime = timeUp + timeDown;
-		
+
 		var vxz = distance / totalTime;
 		var dirXZ = toTargetXZ.normalized;
-		
+
 		launchVelocity = dirXZ * vxz + Vector3.up * vy;
 
 		return true;
