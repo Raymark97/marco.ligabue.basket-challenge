@@ -67,6 +67,8 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		var ballClone = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+		ballClone.tag = "PlayerBall";
+		ballClone.transform.GetChild(0).tag = "PlayerBall";
 		var ballrb = ballClone.GetComponent<Rigidbody>();
 		
 		ballrb.velocity = Vector3.zero;
@@ -81,6 +83,8 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		var ballClone = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+		ballClone.tag = "PlayerBall";
+		ballClone.transform.GetChild(0).tag = "PlayerBall";
 		var ballrb = ballClone.GetComponent<Rigidbody>();
 		
 		ballrb.velocity = Vector3.zero;

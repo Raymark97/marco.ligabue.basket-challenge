@@ -11,13 +11,31 @@ public class GameManager : MonoBehaviour {
 	private Transform backboard;
 	[SerializeField]
 	private Detector detector;
+	[SerializeField]
+	private UIManager uiManager;
 
 	private Transform _player;
 	private Transform _npc;
 
+	private int playerPoints;
+
+	private int PlayerPoints {
+		set {
+			playerPoints = value;
+			uiManager.SetPlayerPoints(value);
+		}
+		get => playerPoints;
+	}
+	private int npcPoints;
+	private int NPCPoints {
+		set {
+			npcPoints = value;
+			uiManager.SetNPCPoints(value);
+		}
+		get => npcPoints;
+	}
+
 	[Header("Shot tuning")]
-	[SerializeField]
-	private float speed = 10f;
 	[SerializeField]
 	private float maxHeight = 4.5f;
 
@@ -130,7 +148,15 @@ public class GameManager : MonoBehaviour {
 	}
 
 
-	private void AddPoints(string player) {
-		Debug.Log($"Adding points to {player}");
+	private void AddPoints(int playerId) {
+		Debug.Log($"Adding points to id {playerId}");
+		switch (playerId) {
+			case 0:
+				PlayerPoints++;
+				break;
+			case 1:
+				NPCPoints++;
+				break;
+		}
 	}
 }

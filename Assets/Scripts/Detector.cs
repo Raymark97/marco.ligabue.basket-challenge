@@ -6,12 +6,15 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 public class Detector : MonoBehaviour {
-	public UnityEvent<string> onBallEnter = new();
+	public UnityEvent<int> onBallEnter = new();
 	private void OnTriggerEnter(Collider other) {
+		Debug.Log($"Entered {other.gameObject.name}");
 		if (other.gameObject.CompareTag("PlayerBall")) {
-			onBallEnter.Invoke("player");
+			onBallEnter.Invoke(0);
+			other.gameObject.tag = "Untagged";
 		} else if (other.gameObject.CompareTag("NPCBall")) {
-			onBallEnter.Invoke("NPC");
+			onBallEnter.Invoke(1);
+			other.gameObject.tag = "Untagged";
 		}
 	}
 }
