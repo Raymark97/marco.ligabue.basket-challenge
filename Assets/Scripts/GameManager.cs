@@ -40,6 +40,11 @@ public class GameManager : MonoBehaviour {
 		if (!CalculateDirectShot(_player, out directShotVelocity)) {
 			Debug.LogWarning("Unable to find direct shot");
 		}
+
+		if (!CalculateBankShot(_player, out indirectShotVelocity)) {
+			Debug.LogWarning("Unable to find indirect shot");
+		}
+		
 		//TODO calculate npc shots and indirect shots
 	}
 
@@ -79,12 +84,10 @@ public class GameManager : MonoBehaviour {
 	}
 
 
-	private bool CalculateBankShot(Transform startPoint, out Vector3 launchVelocity)
-	{
+	private bool CalculateBankShot(Transform startPoint, out Vector3 launchVelocity) {
 		launchVelocity = Vector3.zero;
 
-		if (backboard == null || hoop == null)
-		{
+		if (backboard == null || hoop == null) {
 			Debug.LogWarning("Backboard o Hoop non assegnati!");
 			return false;
 		}
@@ -92,30 +95,24 @@ public class GameManager : MonoBehaviour {
 		var boardNormal = backboard.forward;
 		var hoopToBoard = hoop.position - backboard.position;
 		var distToPlane = Vector3.Dot(hoopToBoard, boardNormal);
-
-		// Punto riflesso del canestro rispetto al piano del tabellone
+		
 		var reflectedHoop = hoop.position - 2f * distToPlane * boardNormal;
-
-		// Vettore verso il punto riflesso
+		
 		var toTarget = reflectedHoop - startPoint.position;
 		var toTargetXZ = new Vector3(toTarget.x, 0f, toTarget.z);
 		var distance = toTargetXZ.magnitude;
 		var startY = startPoint.position.y;
-		var heightDiff = toTarget.y;
 
 		var gravity = Mathf.Abs(Physics.gravity.y);
 
-		// Controllo altezza massima
-		if (maxHeight <= Mathf.Max(startY, reflectedHoop.y))
-		{
-			Debug.LogWarning("maxHeight troppo basso per raggiungere il bersaglio riflesso.");
+		
+		if (maxHeight <= Mathf.Max(startY, reflectedHoop.y)) {
+			Debug.LogWarning("maxHeight too low to reach the reflected hoop.");
 			return false;
 		}
-
-		// Velocità verticale necessaria
+		
 		var vy = Mathf.Sqrt(2f * gravity * (maxHeight - startY));
-
-		// Tempi di salita e discesa
+		
 		var timeUp = vy / gravity;
 		var fallDistance = maxHeight - reflectedHoop.y;
 		if (fallDistance < 0f)
@@ -123,12 +120,10 @@ public class GameManager : MonoBehaviour {
 
 		var timeDown = Mathf.Sqrt(2f * fallDistance / gravity);
 		var totalTime = timeUp + timeDown;
-
-		// Velocità orizzontale per coprire la distanza
+		
 		var vxz = distance / totalTime;
 		var dirXZ = toTargetXZ.normalized;
-
-		// Vettore di lancio finale
+		
 		launchVelocity = dirXZ * vxz + Vector3.up * vy;
 
 		return true;

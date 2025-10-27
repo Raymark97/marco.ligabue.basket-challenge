@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField]
 	private GameObject ballPrefab;
 	
+	[SerializeField]
+	private bool debugMode = false;
+	
 	private GameManager _gameManager;
 	private bool _isDragging;
 	private float _startY;
@@ -25,23 +28,31 @@ public class PlayerController : MonoBehaviour {
 	void Update() {
 		if (_cooldown) return;
 
-		if (Input.GetMouseButtonDown(0)) {
-			_isDragging = true;
-			_startY = Input.mousePosition.y;
-		}
+		if (!debugMode) {
+			if (Input.GetMouseButtonDown(0)) {
+				_isDragging = true;
+				_startY = Input.mousePosition.y;
+			}
 
-		// Quando rilasci il click
-		if (Input.GetMouseButtonUp(0) || _timer >= maxTime) {
-			_isDragging = false;
-			_cooldown = true;
-			StartCoroutine(ResetSlider());
-			Shoot();
-		}
+			// Quando rilasci il click
+			if (Input.GetMouseButtonUp(0) || _timer >= maxTime) {
+				_isDragging = false;
+				_cooldown = true;
+				StartCoroutine(ResetSlider());
+				Shoot();
+			}
 
-		// Durante il drag
-		if (_isDragging) {
-			_endY = Mathf.Max(Input.mousePosition.y, _endY);
-			slider.value = (_endY - _startY) * sensitivity;
+			// Durante il drag
+			if (_isDragging) {
+				_endY = Mathf.Max(Input.mousePosition.y, _endY);
+				slider.value = (_endY - _startY) * sensitivity;
+			}
+		} else {
+			if (Input.GetMouseButtonDown(0)) {
+				Shoot();
+			} else if (Input.GetMouseButtonDown(1)) {
+				ShootBank();
+			}
 		}
 	}
 
@@ -61,6 +72,20 @@ public class PlayerController : MonoBehaviour {
 		ballrb.velocity = Vector3.zero;
 		ballrb.angularVelocity = Vector3.zero;
 		ballrb.AddForce(_gameManager.directShotVelocity * ballrb.mass, ForceMode.Impulse);
+	}
+	
+	public void ShootBank() {
+		if (!ballPrefab) {
+			Debug.LogWarning("BallPrefab not found");
+			return;
+		}
+
+		var ballClone = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+		var ballrb = ballClone.GetComponent<Rigidbody>();
+		
+		ballrb.velocity = Vector3.zero;
+		ballrb.angularVelocity = Vector3.zero;
+		ballrb.AddForce(_gameManager.indirectShotVelocity * ballrb.mass, ForceMode.Impulse);
 	}
 	
 
