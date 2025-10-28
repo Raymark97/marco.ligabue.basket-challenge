@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7934614816716413269}
   - component: {fileID: -8543684555761876598}
   - component: {fileID: 2107167194257938107}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: basketballball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,6 +62,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85d997b20a077aa47bcecfe5b04a6ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  delay: 5
+  bankShot: 0
+  perfectShot: 0
 --- !u!1 &9182969748906864726
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,8 +76,8 @@ GameObject:
   - component: {fileID: 8917228610572054925}
   - component: {fileID: 7654768562068816515}
   - component: {fileID: 3550373119688466642}
-  - component: {fileID: 982931790925381266}
-  m_Layer: 0
+  - component: {fileID: 2927136601539489942}
+  m_Layer: 6
   m_Name: bbc_ball_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +149,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &982931790925381266
+--- !u!64 &2927136601539489942
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

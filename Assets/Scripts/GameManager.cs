@@ -1,44 +1,56 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Serialization;
+
 public class GameManager : MonoBehaviour {
 	public static GameManager Instance;
 
+	[Header("Debug Shot Velocity")]
 	public Vector3 directShotVelocity;
-	public Vector3 indirectShotVelocity;
+	public Vector3 bankShotVelocity;
 
-	[SerializeField]
-	private Transform hoop;
-	[SerializeField]
-	private Transform backboard;
-	[SerializeField]
-	private Detector detector;
-	[SerializeField]
-	private UIManager uiManager;
+	[Header("Components")]
+	[SerializeField] private Transform hoop;
+	[SerializeField] private Transform backboard;
+	[SerializeField] private Detector detector;
+	[SerializeField] private UIManager uiManager;
+	[SerializeField] private TextMeshProUGUI backboardText;
+	
+	[Header("Shoot Race Settings")]
+	[SerializeField] private Transform[] shootingPoints;
+	[SerializeField] private int normalPoints = 2;
+	[SerializeField] private int perfectPoints = 3;
+	
+	[Header("Shot tuning")] [SerializeField]
+	private float maxHeight = 4.5f;
 
 	private Transform _player;
 	private Transform _npc;
-
+	private int backboardBonus = 0;
+	
 	private int _playerPoints;
-
-	private int PlayerPoints {
-		set {
+	private int PlayerPoints
+	{
+		set
+		{
 			_playerPoints = value;
 			uiManager.SetPlayerPoints(value);
 		}
 		get => _playerPoints;
 	}
-	private int _npcPoints;
-	private int NPCPoints {
-		set {
+
+	private int _npcPoints; 
+	private int NPCPoints
+	{
+		set
+		{
 			_npcPoints = value;
 			uiManager.SetNPCPoints(value);
 		}
 		get => _npcPoints;
 	}
-
-	[Header("Shot tuning")]
-	[SerializeField]
-	private float maxHeight = 4.5f;
-
+	
 	private void Awake() {
 		if (Instance == null) {
 			Instance = this;
@@ -59,7 +71,7 @@ public class GameManager : MonoBehaviour {
 			Debug.LogWarning("Unable to find direct shot");
 		}
 
-		if (!CalculateBankShot(_player, out indirectShotVelocity)) {
+		if (!CalculateBankShot(_player, out bankShotVelocity)) {
 			Debug.LogWarning("Unable to find indirect shot");
 		}
 
@@ -147,15 +159,22 @@ public class GameManager : MonoBehaviour {
 		return true;
 	}
 
+	private void SetBackboardPoints(int bonus) {
+		backboardBonus = bonus;
+		backboardText.text = $"+{bonus}";
+		//TODO make Backboard Blink
+	}
 
-	private void AddPoints(int playerId) {
+	private void AddPoints(int playerId, bool perfect, bool backShot) {
+		var points = perfect ? perfectPoints : normalPoints;
+		points += backShot ? backboardBonus : 0;
 		Debug.Log($"Adding points to id {playerId}");
 		switch (playerId) {
 			case 0:
-				PlayerPoints++;
+				PlayerPoints += points;
 				break;
 			case 1:
-				NPCPoints++;
+				NPCPoints  += points;
 				break;
 		}
 	}

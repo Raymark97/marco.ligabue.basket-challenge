@@ -32,11 +32,21 @@ public class PlayerController : MonoBehaviour {
 
 	private void Update() {
 		if (_cooldown) return;
-
-		HandleInput();
+		if(!debugMode)
+			HandleInput();
+		else {
+			DebugInput();
+		}
 		if (_isDragging) {
 			_timer += Time.deltaTime;
 			slider.value = (_endY - _startY) * sensitivity;
+		}
+	}
+	private void DebugInput() {
+		if (Input.GetMouseButtonDown(0)) {
+			Shoot();
+		} else if (Input.GetMouseButtonDown(1)) {
+			ShootBank();
 		}
 	}
 
@@ -130,7 +140,7 @@ public class PlayerController : MonoBehaviour {
 
 		ballrb.velocity = Vector3.zero;
 		ballrb.angularVelocity = Vector3.zero;
-		ballrb.AddForce(_gameManager.indirectShotVelocity * ballrb.mass, ForceMode.Impulse);
+		ballrb.AddForce(_gameManager.bankShotVelocity * ballrb.mass, ForceMode.Impulse);
 	}
 
 	#endregion
