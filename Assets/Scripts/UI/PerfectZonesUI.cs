@@ -8,7 +8,6 @@ namespace UI {
 		[SerializeField] private Slider slider;
 		[SerializeField] private Image directZone;
 		[SerializeField] private Image bankZone;
-		
 		[SerializeField] private GameEvents gameEvents;
 
 		private RectTransform _sliderRect;
@@ -20,12 +19,11 @@ namespace UI {
 		private void OnDisable() {
 			gameEvents.OnPerfectZonesChanged.RemoveListener(UpdateZones);
 		}
-		
 		private void Awake() {
 			_sliderRect = slider.GetComponent<RectTransform>();
 		}
 
-		public void UpdateZones(float directValue, float bankValue, float threshold) {
+		private void UpdateZones(float directValue, float bankValue, float threshold) {
 			if (!_sliderRect) _sliderRect = slider.GetComponent<RectTransform>();
 
 
