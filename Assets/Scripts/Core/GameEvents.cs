@@ -8,7 +8,7 @@ namespace Core {
 		public UnityEvent<int> OnBackboardBonusUpdated = new();
 		public UnityEvent<float, float, float> OnPerfectZonesChanged = new();
 
-		public UnityEvent<int, float> OnFireChargeChanged = new UnityEvent<int, float>();
-		public UnityEvent<int, bool> OnFireStateChanged = new UnityEvent<int, bool>();
+		public UnityEvent<int, float> OnFireChargeChanged = new();
+		public UnityEvent<int, bool> OnFireStateChanged = new();
 	}
 }

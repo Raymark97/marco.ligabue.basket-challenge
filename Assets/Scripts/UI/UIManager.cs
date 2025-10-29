@@ -1,6 +1,7 @@
 using Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI {
 	public class UIManager : MonoBehaviour {
@@ -8,10 +9,16 @@ namespace UI {
 		[SerializeField] private TextMeshProUGUI playerScoreText;
 		[SerializeField] private TextMeshProUGUI npcScoreText;
 		[SerializeField] private TextMeshProUGUI backboardText;
+		[SerializeField] private Slider fireballChargeSlider;
 
 		private void OnEnable() {
 			gameEvents.OnScoreUpdated.AddListener(UpdateScore);
 			gameEvents.OnBackboardBonusUpdated.AddListener(UpdateBackboardBonus);
+			gameEvents.OnFireChargeChanged.AddListener(UpdateFireballChargeSlider);
+		}
+		private void UpdateFireballChargeSlider(int playerId, float charge) {
+			if (playerId != 0) return;
+			fireballChargeSlider.value = charge;
 		}
 
 		private void OnDisable() {
