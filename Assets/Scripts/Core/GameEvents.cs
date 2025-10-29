@@ -6,5 +6,7 @@ namespace Core {
 		public UnityEvent<int, bool, bool> OnScoreAdded = new();
 		public UnityEvent<int, int> OnScoreUpdated = new();
 		public UnityEvent<int> OnBackboardBonusUpdated = new();
+		public UnityEvent<float, float, float> OnPerfectZonesChanged = new();
+
 	}
 }

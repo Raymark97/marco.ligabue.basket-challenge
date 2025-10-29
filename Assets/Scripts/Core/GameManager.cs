@@ -1,6 +1,7 @@
 ﻿using Gameplay;
 using System.Collections;
 using UnityEngine;
+
 namespace Core {
 	public class GameManager : MonoBehaviour {
 		public static GameManager Instance;
@@ -26,23 +27,33 @@ namespace Core {
 		}
 
 		private IEnumerator StartRace() {
-			var player = FindObjectOfType<PlayerController>().transform;
-			if (!ShotCalculator.CalculateDirectShot(player.position, hoop.position, maxHeight, out var direct)) {
+			var player = FindObjectOfType<PlayerController>();
+
+			var playerTransform = player.transform;
+
+			if (!ShotCalculator.CalculateDirectShot(playerTransform.position, hoop.position, maxHeight, out var direct)) {
 				Debug.LogWarning($"Impossible to calculate direct shot for {player.gameObject.name}");
 			}
-			if (!ShotCalculator.CalculateBankShot(player.position, hoop.position, backboard, maxHeight, out var bank)) {
+			if (!ShotCalculator.CalculateBankShot(playerTransform.position, hoop.position, backboard, maxHeight, out var bank)) {
 				Debug.LogWarning($"Impossible to calculate bank shot for  {player.gameObject.name}");
 			}
 
 			DirectShotVelocity = direct;
 			BankShotVelocity = bank;
 
+			var directMag = direct.magnitude;
+			var bankMag = bank.magnitude;
+			var maxMag = directMag * player.MaxShotPowerMultiplier;
+
+			// invia evento alla UI
+			gameEvents.OnPerfectZonesChanged.Invoke(directMag / maxMag, bankMag / maxMag, player.PerfectThreshold);
+
 			yield return new WaitForSeconds(0.5f);
 
 			gameEvents.OnBackboardBonusUpdated.Invoke(0);
-			
+
 			yield return new WaitForSeconds(2f);
-			
+
 			gameEvents.OnBackboardBonusUpdated.Invoke(6);
 		}
 	}

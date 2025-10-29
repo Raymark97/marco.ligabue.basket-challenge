@@ -119,5 +119,9 @@ namespace Gameplay {
 			slider.value = 0;
 			_cooldown = false;
 		}
+		
+		public float MaxShotPowerMultiplier => maxShotPowerMultiplier;
+		public float PerfectThreshold => perfectThreshold;
+
 	}
 }
