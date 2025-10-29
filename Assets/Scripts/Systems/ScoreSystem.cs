@@ -5,17 +5,23 @@ namespace Systems {
 		[SerializeField] private GameEvents gameEvents;
 		[SerializeField] private int normalPoints = 2;
 		[SerializeField] private int perfectPoints = 3;
-		[SerializeField] private int backboardBonus = 1;
+		[SerializeField] private int backboardBonus = 0;
 
 		private int _playerPoints;
 		private int _npcPoints;
 		
 		private void OnEnable() {
 			gameEvents.OnScoreAdded.AddListener(AddPoints);
+			gameEvents.OnBackboardBonusUpdated.AddListener(SetBackboardBonus);
 		}
 
 		private void OnDisable() {
 			gameEvents.OnScoreAdded.RemoveListener(AddPoints);
+			gameEvents.OnBackboardBonusUpdated.RemoveListener(SetBackboardBonus);
+		}
+
+		private void SetBackboardBonus(int bonus) {
+			backboardBonus = bonus;
 		}
 
 		public void AddPoints(int playerId, bool perfect, bool backShot) {

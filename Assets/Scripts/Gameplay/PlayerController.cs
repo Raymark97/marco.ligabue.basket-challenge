@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+
 namespace Gameplay {
 	public class PlayerController : MonoBehaviour {
 		[Header("UI")]
@@ -74,18 +75,15 @@ namespace Gameplay {
 		private void Shoot(float charge) {
 			var direct = _gm.DirectShotVelocity;
 			var bank = _gm.BankShotVelocity;
-
-			// magnitudini ideali
+			
 			var directMag = direct.magnitude;
 			var bankMag = bank.magnitude;
 
 
 			var chargePower = Mathf.Lerp(minPowerFraction, maxShotPowerMultiplier, charge);
-
-			// calcola potenza effettiva
+			
 			var currentPower = chargePower * directMag;
-
-			// confronta con i tiri ideali
+			
 			var diffDirect = Mathf.Abs(currentPower - directMag) / directMag;
 			var diffBank = Mathf.Abs(currentPower - bankMag) / bankMag;
 
@@ -101,8 +99,7 @@ namespace Gameplay {
 				chosenVelocity = perfectBank ? bank : bank.normalized * currentPower;
 				isBank = true;
 			}
-
-			// instanzia palla
+			
 			var ball = Instantiate(ballPrefab, transform.position, Quaternion.identity);
 			var rb = ball.GetComponent<Rigidbody>();
 			rb.velocity = Vector3.zero;

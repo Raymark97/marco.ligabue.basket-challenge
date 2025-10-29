@@ -5,5 +5,6 @@ namespace Core {
 	public class GameEvents : ScriptableObject {
 		public UnityEvent<int, bool, bool> OnScoreAdded = new();
 		public UnityEvent<int, int> OnScoreUpdated = new();
+		public UnityEvent<int> OnBackboardBonusUpdated = new();
 	}
 }
