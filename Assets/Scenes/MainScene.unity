@@ -1792,6 +1792,7 @@ MonoBehaviour:
   gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
   playerScoreText: {fileID: 438196574}
   npcScoreText: {fileID: 1813443110}
+  backboardText: {fileID: 1916056574}
 --- !u!1 &1782940065
 GameObject:
   m_ObjectHideFlags: 0

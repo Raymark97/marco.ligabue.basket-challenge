@@ -8,7 +8,6 @@ namespace Systems {
 		[SerializeField] private GameEvents gameEvents;
 
 		private void OnTriggerEnter(Collider other) {
-			// Cerca un eventuale BallController nel parent
 			var ball = other.GetComponentInParent<BallController>();
 			if (ball == null) return;
 

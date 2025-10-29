@@ -1,3 +1,4 @@
+using Core;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -102,6 +103,7 @@ namespace Gameplay {
 			
 			var ball = Instantiate(ballPrefab, transform.position, Quaternion.identity);
 			var rb = ball.GetComponent<Rigidbody>();
+			ball.transform.GetChild(0).tag = "PlayerBall";
 			rb.velocity = Vector3.zero;
 			rb.angularVelocity = Vector3.zero;
 			rb.AddForce(chosenVelocity * rb.mass, ForceMode.Impulse);

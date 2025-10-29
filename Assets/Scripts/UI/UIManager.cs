@@ -1,6 +1,7 @@
 using Core;
 using TMPro;
 using UnityEngine;
+
 namespace UI {
 	public class UIManager : MonoBehaviour {
 		[SerializeField] private GameEvents gameEvents;
@@ -18,8 +19,8 @@ namespace UI {
 			gameEvents.OnBackboardBonusUpdated.RemoveListener(UpdateBackboardBonus);
 		}
 
-		public void UpdateBackboardBonus(int bonus) {
-			backboardText.text = $"+{bonus}";
+		private void UpdateBackboardBonus(int bonus) {
+			backboardText.text = bonus == 0 ? "" : $"+{bonus}";
 		}
 
 		public void UpdateScore(int playerId, int newScore) {
