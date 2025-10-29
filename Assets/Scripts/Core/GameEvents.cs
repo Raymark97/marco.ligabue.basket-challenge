@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+using UnityEngine.Events;
+namespace Core {
+	[CreateAssetMenu(fileName = "GameEvents", menuName = "Game/GameEvents")]
+	public class GameEvents : ScriptableObject {
+		public UnityEvent<int, bool, bool> OnScoreAdded = new();
+		public UnityEvent<int, int> OnScoreUpdated = new();
+	}
+}

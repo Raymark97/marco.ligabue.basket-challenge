@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerBall
   - NPCBall
+  - Backboard
   layers:
   - Default
   - TransparentFX

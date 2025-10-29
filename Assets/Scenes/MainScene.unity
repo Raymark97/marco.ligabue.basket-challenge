@@ -605,7 +605,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -1074,9 +1074,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa256126d3438f346a444e54fedf40e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onBallEnter:
-    m_PersistentCalls:
-      m_Calls: []
+  gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
 --- !u!135 &732917864
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1508,6 +1506,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1222695976}
   - component: {fileID: 1222695975}
+  - component: {fileID: 1222695977}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1527,16 +1526,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4dc66ba90d241eea4dc5835769935ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  directShotVelocity: {x: 0, y: 0, z: 0}
-  bankShotVelocity: {x: 0, y: 0, z: 0}
+  gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
   hoop: {fileID: 474694065}
   backboard: {fileID: 1530694750}
-  detector: {fileID: 732917863}
-  uiManager: {fileID: 1570999419}
-  backboardText: {fileID: 1916056574}
-  shootingPoints: []
-  normalPoints: 0
-  perfectPoints: 0
   maxHeight: 4
 --- !u!4 &1222695976
 Transform:
@@ -1553,6 +1545,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1222695977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1222695974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a14420f7439241589b3393b8485de04c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
+  normalPoints: 2
+  perfectPoints: 3
+  backboardBonus: 0
 --- !u!1 &1308973165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1781,10 +1789,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2df9ca6fa06aa4bb912eef3a3be43e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScore: {fileID: 438196574}
-  NPCScore: {fileID: 1813443110}
-  fireSlider: {fileID: 208384652}
-  shootSlider: {fileID: 331940275}
+  gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
+  playerScoreText: {fileID: 438196574}
+  npcScoreText: {fileID: 1813443110}
 --- !u!1 &1782940065
 GameObject:
   m_ObjectHideFlags: 0
@@ -2189,11 +2196,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 331940275}
-  sensitivity: 0.2
+  sensitivity: 0.004
   maxTime: 1
   ballPrefab: {fileID: 7302228966777979887, guid: 81f8f4e2023ea7e49a8eac430185e408,
     type: 3}
-  debugMode: 0
+  perfectThreshold: 0.05
+  maxShotPowerMultiplier: 1.2
+  minPowerFraction: 0.3
 --- !u!4 &1845601135
 Transform:
   m_ObjectHideFlags: 0
@@ -2579,6 +2588,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2890491957103439856, guid: 521ecd25b32707b41aea96abf81ce872,
+        type: 3}
+      propertyPath: m_TagString
+      value: Backboard
       objectReference: {fileID: 0}
     - target: {fileID: 2890491957103439856, guid: 521ecd25b32707b41aea96abf81ce872,
         type: 3}
