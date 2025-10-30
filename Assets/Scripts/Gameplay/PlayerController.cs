@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 namespace Gameplay {
 	public class PlayerController : MonoBehaviour {
-		[Header("UI")]
+		[Header("References")]
 		[SerializeField] private Slider slider;
+		[SerializeField] private GameEvents gameEvents;
 
 		[Header("Input")]
 		[SerializeField] private float sensitivity = 0.1f;
@@ -107,6 +108,7 @@ namespace Gameplay {
 			rb.velocity = Vector3.zero;
 			rb.angularVelocity = Vector3.zero;
 			rb.AddForce(chosenVelocity * rb.mass, ForceMode.Impulse);
+			gameEvents.OnBallThrown.Invoke(0, ball);
 
 			var type = perfectDirect ? "PERFETTO Diretto" :
 			perfectBank ? "PERFETTO Tabellone" :
