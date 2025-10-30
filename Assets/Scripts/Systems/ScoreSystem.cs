@@ -26,11 +26,13 @@ namespace Systems {
 		private void OnEnable() {
 			gameEvents.OnScoreAdded.AddListener(AddPoints);
 			gameEvents.OnBackboardBonusUpdated.AddListener(SetBackboardBonus);
+			gameEvents.OnShotMiss.AddListener(OnMiss);
 		}
 
 		private void OnDisable() {
 			gameEvents.OnScoreAdded.RemoveListener(AddPoints);
 			gameEvents.OnBackboardBonusUpdated.RemoveListener(SetBackboardBonus);
+			gameEvents.OnShotMiss.RemoveListener(OnMiss);
 		}
 
 		private void SetBackboardBonus(int bonus) {
@@ -86,9 +88,14 @@ namespace Systems {
 
 		public void OnMiss(int playerId) {
 			ref var active = ref playerId == 0 ? ref _fireActivePlayer : ref _fireActiveNPC;
+			ref var charge = ref playerId == 0 ? ref _fireChargePlayer : ref _fireChargeNPC;
+			charge = 0;
+			gameEvents.OnFireChargeChanged.Invoke(playerId, 0f);
+			Debug.Log("Player " + playerId + " has missed the shot.");
 			if (!active) return;
-
 			EndFireMode(playerId);
+			
+			
 		}
 
 		private void EndFireMode(int playerId) {

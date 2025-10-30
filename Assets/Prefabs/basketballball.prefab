@@ -62,9 +62,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85d997b20a077aa47bcecfe5b04a6ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delay: 5
+  destroyDelay: 3
   bankShot: 0
   perfectShot: 0
+  gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
 --- !u!1 &9182969748906864726
 GameObject:
   m_ObjectHideFlags: 0

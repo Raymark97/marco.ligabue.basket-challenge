@@ -1,3 +1,4 @@
+using Core;
 using System.Collections;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ namespace Gameplay {
 		[Header("Shot Info")]
 		public bool bankShot;
 		public bool perfectShot;
+
+		[Header("References")]
+		[SerializeField] private GameEvents gameEvents;
 
 		private Rigidbody _rb;
 		private bool _hasBounced;
@@ -24,6 +28,15 @@ namespace Gameplay {
 
 		private IEnumerator AutoDestroy() {
 			yield return new WaitForSeconds(destroyDelay);
+
+			var ball = transform.GetChild(0);
+			if (ball.CompareTag("PlayerBall")) {
+				gameEvents.OnShotMiss.Invoke(0);
+			} else if (ball.CompareTag("NPCBall")) {
+				gameEvents.OnShotMiss.Invoke(1);
+			}
+
+			Debug.Log("Destroyed ball with tag " + ball.tag);
 			Destroy(gameObject);
 		}
 
@@ -33,11 +46,6 @@ namespace Gameplay {
 				_hasBounced = true;
 				Debug.Log("[BallController] Bank shot detected.");
 			}
-		}
-
-		// Facoltativo: per segnare un tiro perfetto
-		public void MarkPerfect() {
-			perfectShot = true;
 		}
 	}
 }
