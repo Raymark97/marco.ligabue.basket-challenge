@@ -8,6 +8,7 @@ namespace Gameplay {
 		[Header("References")]
 		[SerializeField] private Slider slider;
 		[SerializeField] private GameEvents gameEvents;
+		
 
 		[Header("Input")]
 		[SerializeField] private float sensitivity = 0.1f;
@@ -125,5 +126,9 @@ namespace Gameplay {
 		public float MaxShotPowerMultiplier => maxShotPowerMultiplier;
 		public float PerfectThreshold => perfectThreshold;
 
+		public void MoveTo(Vector3 target) {
+			transform.position = target;
+			transform.LookAt(target);
+		}
 	}
 }
