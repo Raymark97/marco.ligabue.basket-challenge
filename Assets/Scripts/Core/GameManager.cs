@@ -1,6 +1,4 @@
-﻿using Gameplay;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Core {
 	public class GameManager : MonoBehaviour {
@@ -14,12 +12,9 @@ namespace Core {
 		[SerializeField] public Transform backboard;
 		[SerializeField] public float maxHeight = 4.5f;
 
-
 		private void Awake() {
 			if (Instance == null) Instance = this;
 			else { Destroy(gameObject); }
 		}
-		
-		
 	}
 }

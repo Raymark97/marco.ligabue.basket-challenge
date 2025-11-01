@@ -1,7 +1,6 @@
 ﻿using Core;
 using Gameplay;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 namespace Systems {
@@ -16,7 +15,7 @@ namespace Systems {
         [SerializeField] private Transform playerCamPos;
 
         [Header("Settings")]
-        [SerializeField, Tooltip("Offset laterale dal punto base per separare player e NPC")]
+        [SerializeField, Tooltip("Lateral offset from the base point to separate player and NPC")]
         private float sideOffset = 1.5f;
         
         [Header("Match Settings")]
@@ -25,7 +24,7 @@ namespace Systems {
         [SerializeField, Tooltip("Initial delay before the first bonus appears (in seconds)")]
 		private float bonusInitialDelay = 10f;
         [SerializeField, Tooltip("How often a new bonus can appear (in seconds)")]
-        private Vector2 bonusSpawnInterval = new Vector2(5f, 12f);
+        private Vector2 bonusSpawnInterval = new(5f, 12f);
         [SerializeField, Tooltip("Possible bonus point values")]
         private int[] bonusValues = { 4, 6, 8 };
 
