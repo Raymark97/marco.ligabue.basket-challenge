@@ -4,24 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Gameplay {
-	public class PlayerController : MonoBehaviour {
-		[Header("References")]
-		[SerializeField] private Slider slider;
-		[SerializeField] private GameEvents gameEvents;
-		
+	public class PlayerController : MonoBehaviour, IShotController {
+		[Header("References")] [SerializeField]
+		private Slider slider;
 
-		[Header("Input")]
-		[SerializeField] private float sensitivity = 0.1f;
+		[SerializeField] private GameEvents gameEvents;
+
+
+		[Header("Input")] [SerializeField] private float sensitivity = 0.1f;
 		[SerializeField] private float maxTime = 1f;
 
-		[Header("Gameplay")]
-		[SerializeField] private GameObject ballPrefab;
-		[SerializeField, Range(0f, 0.3f)]
-		private float perfectThreshold = 0.1f;
-		[SerializeField]
-		private float maxShotPowerMultiplier = 1.2f;
-		[SerializeField]
-		private float minPowerFraction = 0.3f;
+		[Header("Gameplay")] [SerializeField] private GameObject ballPrefab;
+		[SerializeField, Range(0f, 0.3f)] private float perfectThreshold = 0.1f;
+		[SerializeField] private float maxShotPowerMultiplier = 1.2f;
+		[SerializeField] private float minPowerFraction = 0.3f;
+
+		[SerializeField] private float shotStartHeight = 1.8f;
 
 		private bool _isDragging;
 		private float _startY;
@@ -29,7 +27,11 @@ namespace Gameplay {
 		private float _timer;
 		private bool _cooldown;
 
+
 		private GameManager _gm;
+		private Vector3 _directShotVelocity = new();
+		private Vector3 _bankShotVelocity = new();
+		private Vector3 _shotStartPoint;
 
 		private void Start() {
 			_gm = GameManager.Instance;
@@ -76,17 +78,17 @@ namespace Gameplay {
 		}
 
 		private void Shoot(float charge) {
-			var direct = _gm.DirectShotVelocity;
-			var bank = _gm.BankShotVelocity;
-			
+			var direct = _directShotVelocity;
+			var bank = _bankShotVelocity;
+
 			var directMag = direct.magnitude;
 			var bankMag = bank.magnitude;
 
 
 			var chargePower = Mathf.Lerp(minPowerFraction, maxShotPowerMultiplier, charge);
-			
+
 			var currentPower = chargePower * directMag;
-			
+
 			var diffDirect = Mathf.Abs(currentPower - directMag) / directMag;
 			var diffBank = Mathf.Abs(currentPower - bankMag) / bankMag;
 
@@ -102,8 +104,9 @@ namespace Gameplay {
 				chosenVelocity = perfectBank ? bank : bank.normalized * currentPower;
 				isBank = true;
 			}
-			
-			var ball = Instantiate(ballPrefab, transform.position, Quaternion.identity);
+
+
+			var ball = Instantiate(ballPrefab, _shotStartPoint, Quaternion.identity);
 			var rb = ball.GetComponent<Rigidbody>();
 			ball.transform.GetChild(0).tag = "PlayerBall";
 			rb.velocity = Vector3.zero;
@@ -112,8 +115,9 @@ namespace Gameplay {
 			gameEvents.OnBallThrown.Invoke(0, ball);
 
 			var type = perfectDirect ? "PERFETTO Diretto" :
-			perfectBank ? "PERFETTO Tabellone" :
-			isBank ? "Bank approssimato" : "Diretto approssimato";
+				perfectBank ? "PERFETTO Tabellone" :
+				isBank ? "Bank approssimato" : "Diretto approssimato";
+
 			Debug.Log($"Tiro: {type} (slider={charge:F2}, power={chargePower:F2})");
 		}
 
@@ -122,13 +126,28 @@ namespace Gameplay {
 			slider.value = 0;
 			_cooldown = false;
 		}
-		
+
 		public float MaxShotPowerMultiplier => maxShotPowerMultiplier;
 		public float PerfectThreshold => perfectThreshold;
 
-		public void MoveTo(Vector3 target) {
-			transform.position = target;
-			transform.LookAt(target);
+		public void RecalculateTrajectories() {
+			_gm = GameManager.Instance;
+			_shotStartPoint = transform.position + new Vector3(0, shotStartHeight, 0);
+
+			if (!ShotCalculator.CalculateDirectShot(_shotStartPoint, _gm.hoop.position, _gm.maxHeight, out _directShotVelocity))
+				Debug.LogWarning("Couldn't calculate direct shot!");
+
+			if (!ShotCalculator.CalculateBankShot(_shotStartPoint, _gm.hoop.position, _gm.backboard, _gm.maxHeight,
+				    out _bankShotVelocity))
+				Debug.LogWarning("Couldn't calculate bank shot!");
+
+			var directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+			var bankValue   = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+
+			Debug.Log($"Direct:  {directValue}, Bank: {bankValue}");
+			
+			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, PerfectThreshold);
 		}
+
 	}
 }

@@ -6,8 +6,7 @@ namespace Camera {
     public class CameraFollowShot : MonoBehaviour {
         [Header("References")]
         [SerializeField] private GameEvents gameEvents;
-        [SerializeField] private Transform hoop;          // Canestro o tabellone
-        [SerializeField] private Transform playerCamPos;  // Posizione base della camera
+        [SerializeField] private Transform hoop;
 
         [Header("Camera Settings")]
         [SerializeField] private float zoomDistance = 3f;
@@ -15,6 +14,7 @@ namespace Camera {
         [SerializeField] private float zoomFOV = 40f;
         [SerializeField] private float baseHeightOffset = 1.5f;
         [SerializeField] private float returnDelay = 0.8f;
+        [SerializeField] private float startDelay = 0.5f;
 
         private UnityEngine.Camera _cam;
         private float _baseFOV;
@@ -24,6 +24,10 @@ namespace Camera {
         private void Awake() {
             _cam = GetComponentInChildren<UnityEngine.Camera>();
             _baseFOV = _cam.fieldOfView;
+        }
+
+        private void Start() {
+	        ReturnToPlayer();
         }
 
         private void OnEnable() {
@@ -48,6 +52,7 @@ namespace Camera {
         private void OnShotEnded(int _, bool __, bool ___) => ReturnToPlayer();
 
         private IEnumerator FollowRoutine(Transform ball) {
+	        yield return new WaitForSeconds(startDelay);
             _ball = ball;
             
             var zoomPos = hoop.position - hoop.forward * zoomDistance + Vector3.up * baseHeightOffset;
@@ -55,17 +60,17 @@ namespace Camera {
             var t = 0f;
             var startFOV = _cam.fieldOfView;
             while (t < 1f) {
-                t += Time.deltaTime * 1.5f;
+                t += Time.deltaTime * 1f;
                 _cam.fieldOfView = Mathf.Lerp(startFOV, zoomFOV, t);
-                transform.position = Vector3.Lerp(transform.position, zoomPos, t * 0.8f);
-                transform.rotation = Quaternion.Slerp(transform.rotation,
-                    Quaternion.LookRotation(hoop.position - transform.position), t * 0.8f);
+                _cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, t * 0.8f);
+                _cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
+                    Quaternion.LookRotation(hoop.position - _cam.transform.position), t * 0.8f);
                 yield return null;
             }
 
             
             var previousY = _ball.position.y;
-            while (_ball != null) {
+            while (_ball) {
                 var lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.7f);
 
                 
@@ -73,14 +78,12 @@ namespace Camera {
                     break;
                 previousY = _ball.position.y;
 
-                transform.position = Vector3.Lerp(transform.position, zoomPos, Time.deltaTime * followSmooth);
-                transform.rotation = Quaternion.Slerp(transform.rotation,
-                    Quaternion.LookRotation(lookTarget - transform.position), Time.deltaTime * followSmooth);
+                _cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, Time.deltaTime * followSmooth);
+                _cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
+                    Quaternion.LookRotation(lookTarget - _cam.transform.position), Time.deltaTime * followSmooth);
 
                 yield return null;
             }
-
-            // Breve pausa sul tabellone
             yield return new WaitForSeconds(returnDelay);
 
             ReturnToPlayer();
@@ -89,8 +92,8 @@ namespace Camera {
         private void ReturnToPlayer() {
             if (_routine != null)
                 StopCoroutine(_routine);
-            transform.position = playerCamPos.position;
-            transform.rotation = playerCamPos.rotation;
+            _cam.transform.position = transform.position;
+            _cam.transform.rotation = transform.rotation;
             _cam.fieldOfView = _baseFOV;
         }
     }

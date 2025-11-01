@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
 namespace Gameplay {
-	public class NPCController : MonoBehaviour {
-
+	public class NPCController : MonoBehaviour, IShotController {
+		public void RecalculateTrajectories() {
+		}
 	}
 }

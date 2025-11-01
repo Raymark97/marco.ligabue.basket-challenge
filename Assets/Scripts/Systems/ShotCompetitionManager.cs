@@ -1,16 +1,19 @@
 ﻿using Core;
 using Gameplay;
 using UnityEngine;
-
 namespace Systems {
     public class ShotCompetitionManager : MonoBehaviour {
         [Header("References")]
         [SerializeField] private GameEvents gameEvents;
-        [SerializeField] private Transform[] shotPositions;      // posizioni da cui si tira
-        [SerializeField] private PlayerController player;        // player controllato
-        [SerializeField] private NPCController npc;              // NPC automatico
-        [SerializeField] private Transform hoop;                 // canestro
-        [SerializeField] private Transform playerCamPos;         // posizione base della camera
+        [SerializeField] private Transform[] shotPositions;
+        [SerializeField] private PlayerController player;
+        [SerializeField] private NPCController npc;
+        [SerializeField] private Transform hoop;
+        [SerializeField] private Transform playerCamPos;
+
+        [Header("Settings")]
+        [SerializeField, Tooltip("Offset laterale dal punto base per separare player e NPC")]
+        private float sideOffset = 1.5f;
 
         private int _playerIndex;
         private int _npcIndex;
@@ -28,57 +31,63 @@ namespace Systems {
         }
 
         private void Start() {
-            MoveAndFaceHoop(player.transform, _playerIndex);
-            MoveAndFaceHoop(npc.transform, _npcIndex);
-            UpdateCameraToPlayerPosition();
+            PositionPlayer(_playerIndex);
+            PositionNPC(_npcIndex);
+            player.RecalculateTrajectories();
+            npc.RecalculateTrajectories();
         }
 
         private void OnScoreAdded(int playerId, bool perfect, bool bankShot) {
-            if (playerId == 0 && !_playerFinished) {
-                Advance(ref _playerIndex, player.transform, ref _playerFinished);
-            } else if (playerId == 1 && !_npcFinished) {
-                Advance(ref _npcIndex, npc.transform, ref _npcFinished);
-            }
+            if (playerId == 0 && !_playerFinished)
+	            AdvancePlayer(ref _playerIndex, player, ref _playerFinished, true);
+            else if (playerId == 1 && !_npcFinished)
+	            AdvancePlayer(ref _npcIndex, npc, ref _npcFinished, false);
         }
 
         private void OnShotMiss(int playerId) {
-            // Se sbaglia, resta nella stessa posizione
+            // Nessun avanzamento
         }
 
-        private void Advance(ref int index, Transform controller, ref bool finishedFlag) {
-            index++;
-            if (index >= shotPositions.Length) {
-                finishedFlag = true;
-                gameEvents.OnPlayerFinished.Invoke(controller == player.transform ? 0 : 1);
-                return;
-            }
+        private void AdvancePlayer(ref int index, IShotController controller, ref bool finishedFlag, bool isPlayer) {
+	        index++;
+	        if (index >= shotPositions.Length) {
+		        finishedFlag = true;
+		        gameEvents.OnPlayerFinished.Invoke(isPlayer ? 0 : 1);
+		        return;
+	        }
 
-            MoveAndFaceHoop(controller, index);
+	        if (isPlayer)
+		        PositionPlayer(index);
+	        else
+		        PositionNPC(index);
 
-            if (controller == player.transform)
-                UpdateCameraToPlayerPosition();
+	        controller.RecalculateTrajectories();
         }
 
-        private void MoveAndFaceHoop(Transform controller, int index) {
+        private void PositionPlayer(int index) {
             if (index < 0 || index >= shotPositions.Length) return;
 
-            var target = shotPositions[index];
-            controller.position = target.position;
+            var basePos = shotPositions[index];
+            var forward = (hoop.position - basePos.position).normalized;
+            forward.y = 0f;
+            var right = Vector3.Cross(Vector3.up, forward);
 
-            var dir = hoop.position - controller.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude > 0.001f)
-                controller.rotation = Quaternion.LookRotation(dir);
+            var playerPos = basePos.position - right * (sideOffset / 2f);
+
+            player.transform.SetPositionAndRotation(playerPos, Quaternion.LookRotation(forward));
         }
 
-        private void UpdateCameraToPlayerPosition() {
-            if (!playerCamPos || !player) return;
+        private void PositionNPC(int index) {
+            if (index < 0 || index >= shotPositions.Length) return;
 
-            var pos = player.transform.position;
-            var back = -player.transform.forward;
+            var basePos = shotPositions[index];
+            var forward = (hoop.position - basePos.position).normalized;
+            forward.y = 0f;
+            var right = Vector3.Cross(Vector3.up, forward);
 
-            playerCamPos.position = pos + back * 3f + Vector3.up * 1.5f;
-            playerCamPos.rotation = Quaternion.LookRotation(player.transform.forward, Vector3.up);
+            var npcPos = basePos.position + right * (sideOffset / 2f);
+
+            npc.transform.SetPositionAndRotation(npcPos, Quaternion.LookRotation(forward));
         }
     }
 }
