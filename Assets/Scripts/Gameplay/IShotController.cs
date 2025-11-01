@@ -11,5 +11,6 @@
         /// Called whenever the shooter moves to a new spot.
         /// </summary>
         void RecalculateTrajectories();
+        
     }
 }

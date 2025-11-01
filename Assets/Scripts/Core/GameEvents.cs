@@ -28,5 +28,6 @@ namespace Core {
 		//  PROGRESSION / COMPETITION
 		// ─────────────────────────────
 		public UnityEvent<int> OnPlayerFinished = new();                 // (playerId)
+		public UnityEvent<int> OnTimerChanged = new();
 	}
 }
