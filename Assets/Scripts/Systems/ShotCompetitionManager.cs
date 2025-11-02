@@ -55,18 +55,16 @@ namespace Systems {
 
         private void OnScoreAdded(int playerId, bool perfect, bool bankShot) {
             if (playerId == 0 && !_playerFinished)
-	            AdvancePlayer(ref _playerIndex, player, ref _playerFinished, true);
+	            AdvancePlayer(ref _playerIndex, player, true);
             else if (playerId == 1 && !_npcFinished)
-	            AdvancePlayer(ref _npcIndex, npc, ref _npcFinished, false);
+	            AdvancePlayer(ref _npcIndex, npc, false);
         }
 
 
-        private void AdvancePlayer(ref int index, IShotController controller, ref bool finishedFlag, bool isPlayer) {
+        private void AdvancePlayer(ref int index, IShotController controller, bool isPlayer) {
 	        index++;
 	        if (index >= _shotPositions.Length) {
-		        finishedFlag = true;
-		        gameEvents.OnPlayerFinished.Invoke(isPlayer ? 0 : 1);
-		        return;
+		        index = 0;
 	        }
 
 	        if (isPlayer)
@@ -124,10 +122,6 @@ namespace Systems {
         private void EndMatch() {
 	        npc.StopShooting();
 	        player.enabled = false;
-
-	        gameEvents.OnPlayerFinished.Invoke(0);
-	        gameEvents.OnPlayerFinished.Invoke(1);
-
 	        Debug.Log("Match ended — time is up!");
         }
         

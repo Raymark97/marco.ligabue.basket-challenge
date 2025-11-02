@@ -10,6 +10,7 @@ namespace Core {
 		public UnityEvent<int, bool, bool> OnScoreAdded = new();			// (playerId, perfect, bankShot)
 		public UnityEvent<int, int> OnScoreUpdated = new();					// (playerId, totalScore)
 		public UnityEvent<int> OnBackboardBonusUpdated = new();				// (bonus amount)
+		public UnityEvent<int> OnTimerChanged = new();						// (time in seconds)
 
 		// ─────────────────────────────
 		//  FIREBALL MODE
@@ -23,11 +24,5 @@ namespace Core {
 		public UnityEvent<float, float, float> OnPerfectZonesChanged = new();// (direct, bank, threshold)
 		public UnityEvent<int, GameObject> OnBallThrown = new();			// (playerId, ballInstance)
 		public UnityEvent<int> OnShotMiss = new();							// (playerId)
-
-		// ─────────────────────────────
-		//  PROGRESSION / COMPETITION
-		// ─────────────────────────────
-		public UnityEvent<int> OnPlayerFinished = new();					// (playerId)
-		public UnityEvent<int> OnTimerChanged = new();						// (time in seconds)
 	}
 }

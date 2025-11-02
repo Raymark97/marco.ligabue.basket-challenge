@@ -49,8 +49,14 @@ namespace Camera {
 			_routine = StartCoroutine(FollowRoutine(ball.transform));
 		}
 
-		private void OnShotEnded(int playerId) => ReturnToPlayer(playerId);
-		private void OnShotEnded(int playerId, bool __, bool ___) => ReturnToPlayer();
+		private void OnShotEnded(int playerId) {
+			if (playerId != 0) return;
+			ReturnToPlayer();
+		}
+		private void OnShotEnded(int playerId, bool __, bool ___) {
+			if (playerId != 0) return;
+			ReturnToPlayer();
+		}
 
 		private IEnumerator FollowRoutine(Transform ball) {
 			yield return new WaitForSeconds(startDelay);
@@ -90,8 +96,7 @@ namespace Camera {
 			ReturnToPlayer();
 		}
 
-		private void ReturnToPlayer(int playerId = 0) {
-			if(playerId != 0) return;
+		private void ReturnToPlayer() {
 			if (_routine != null)
 				StopCoroutine(_routine);
 			_cam.transform.position = transform.position;

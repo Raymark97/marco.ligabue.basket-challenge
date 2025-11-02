@@ -32,9 +32,32 @@ namespace Gameplay {
 		private Vector3 _directShotVelocity = new();
 		private Vector3 _bankShotVelocity = new();
 		private Vector3 _shotStartPoint;
+		
+		private bool _fireballActive;
 
 		private void Start() {
 			_gm = GameManager.Instance;
+			gameEvents.OnFireStateChanged.AddListener(TrackFireballState);
+			gameEvents.OnScoreAdded.AddListener(OnScoreAdded);
+			gameEvents.OnShotMiss.AddListener(OnShotMiss);
+		}
+		
+		private void TrackFireballState(int playerId, bool state) {
+			if (playerId != 0) return;
+			_fireballActive = state;
+		}
+		private void OnShotMiss(int playerId) {
+			if (playerId != 0) return;
+			ResetSlider();
+		}
+		private void OnScoreAdded(int playerId, bool __, bool ___) {
+			if (playerId != 0) return;
+			ResetSlider();
+		}
+
+		private void ResetSlider() {
+			slider.value = 0;
+			_cooldown = false;
 		}
 
 		private void Update() {
@@ -74,7 +97,6 @@ namespace Gameplay {
 			_isDragging = false;
 			_cooldown = true;
 			Shoot(slider.value);
-			StartCoroutine(ResetSlider());
 		}
 
 		private void Shoot(float charge) {
@@ -109,6 +131,10 @@ namespace Gameplay {
 			var ball = Instantiate(ballPrefab, _shotStartPoint, Quaternion.identity);
 			var rb = ball.GetComponent<Rigidbody>();
 			ball.transform.GetChild(0).tag = "PlayerBall";
+			var ballController = ball.GetComponent<BallController>();
+			ballController.bankShot = isBank;
+			ballController.perfectShot = perfectDirect;
+			ballController.fireballActive = _fireballActive;
 			rb.velocity = Vector3.zero;
 			rb.angularVelocity = Vector3.zero;
 			rb.AddForce(chosenVelocity * rb.mass, ForceMode.Impulse);
@@ -120,15 +146,6 @@ namespace Gameplay {
 
 			Debug.Log($"Tiro: {type} (slider={charge:F2}, power={chargePower:F2})");
 		}
-
-		private IEnumerator ResetSlider() {
-			yield return new WaitForSeconds(0.5f);
-			slider.value = 0;
-			_cooldown = false;
-		}
-
-		public float MaxShotPowerMultiplier => maxShotPowerMultiplier;
-		public float PerfectThreshold => perfectThreshold;
 
 		public void RecalculateTrajectories() {
 			_gm = GameManager.Instance;
@@ -143,10 +160,8 @@ namespace Gameplay {
 
 			var directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
 			var bankValue   = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-
-			Debug.Log($"Direct:  {directValue}, Bank: {bankValue}");
 			
-			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, PerfectThreshold);
+			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, perfectThreshold);
 		}
 
 	}

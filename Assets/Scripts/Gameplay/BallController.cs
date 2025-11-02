@@ -11,9 +11,12 @@ namespace Gameplay {
 		[Header("Shot Info")]
 		public bool bankShot;
 		public bool perfectShot;
+		public bool fireballActive;
 
 		[Header("References")]
 		[SerializeField] private GameEvents gameEvents;
+		[SerializeField] private ParticleSystem fireballParticles;
+		[SerializeField] private TrailRenderer trailRenderer;
 
 		private Rigidbody _rb;
 		private bool _hasBounced;
@@ -24,6 +27,7 @@ namespace Gameplay {
 
 		private void Start() {
 			StartCoroutine(AutoDestroy());
+			ApplyVisuals();
 		}
 
 		private IEnumerator AutoDestroy() {
@@ -35,16 +39,19 @@ namespace Gameplay {
 			} else if (ball.CompareTag("NPCBall")) {
 				gameEvents.OnShotMiss.Invoke(1);
 			}
-
-			Debug.Log("Destroyed ball with tag " + ball.tag);
 			Destroy(gameObject);
+		}
+		
+		private void ApplyVisuals() {
+			//TODO set fireball material
+			fireballParticles.gameObject.SetActive(fireballActive);
+			trailRenderer.gameObject.SetActive(perfectShot && !fireballActive);
 		}
 
 		private void OnCollisionEnter(Collision collision) {
 			if (!_hasBounced && collision.gameObject.CompareTag("Backboard")) {
 				bankShot = true;
 				_hasBounced = true;
-				Debug.Log("[BallController] Bank shot detected.");
 			}
 		}
 	}

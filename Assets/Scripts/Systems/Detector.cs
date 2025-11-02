@@ -25,7 +25,7 @@ namespace Systems {
 			// Comunica l’evento globale
 			gameEvents.OnScoreAdded.Invoke(playerId, ball.perfectShot, ball.bankShot);
 
-			Debug.Log($"[Detector] Score detected for Player {playerId} (Bank: {ball.bankShot})");
+			Debug.Log($"[Detector] Score detected for Player {playerId} (Perfect: {ball.perfectShot}, Bank: {ball.bankShot})");
 		}
 	}
 }
