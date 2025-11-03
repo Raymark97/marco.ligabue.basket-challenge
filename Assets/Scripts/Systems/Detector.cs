@@ -1,20 +1,28 @@
+using System;
+using Audio;
 using Core;
 using Gameplay;
 using UnityEngine;
 
 namespace Systems {
-	[RequireComponent(typeof(Collider))]
+	[RequireComponent(typeof(Collider)), RequireComponent(typeof(AudioSource))]
 	public class Detector : MonoBehaviour {
 		[SerializeField] private GameEvents gameEvents;
+		private AudioSource scoreSource;
+
+		private void Awake() {
+			scoreSource  = GetComponent<AudioSource>();
+		}
 
 		private void OnTriggerEnter(Collider other) {
 			var ball = other.GetComponentInParent<BallController>();
 			if (ball == null) return;
 
 			var playerId = -1;
-			if (other.CompareTag("PlayerBall"))
+			if (other.CompareTag("PlayerBall")) {
 				playerId = 0;
-			else if (other.CompareTag("NPCBall"))
+				AudioManager.Instance.PlaySFX("Score", scoreSource);
+			} else if (other.CompareTag("NPCBall"))
 				playerId = 1;
 
 			if (playerId == -1) return;

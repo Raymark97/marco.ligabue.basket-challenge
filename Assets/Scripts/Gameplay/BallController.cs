@@ -1,9 +1,10 @@
 using Core;
 using System.Collections;
+using Audio;
 using UnityEngine;
 
 namespace Gameplay {
-	[RequireComponent(typeof(Rigidbody))]
+	[RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(AudioSource))]
 	public class BallController : MonoBehaviour {
 		[Header("Lifetime")]
 		[SerializeField] private float destroyDelay = 5f;
@@ -20,9 +21,11 @@ namespace Gameplay {
 
 		private Rigidbody _rb;
 		private bool _hasBounced;
+		private AudioSource audioSource;
 
 		private void Awake() {
 			_rb = GetComponent<Rigidbody>();
+			audioSource = GetComponent<AudioSource>();
 		}
 
 		private void Start() {
@@ -52,6 +55,9 @@ namespace Gameplay {
 			if (!_hasBounced && collision.gameObject.CompareTag("Backboard")) {
 				bankShot = true;
 				_hasBounced = true;
+				AudioManager.Instance.PlaySFX("BackboardHit", audioSource);
+			} else if (collision.gameObject.CompareTag("Rim")) {
+				AudioManager.Instance.PlaySFX("RimHit", audioSource);
 			}
 		}
 	}

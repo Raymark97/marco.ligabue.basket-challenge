@@ -7,6 +7,7 @@ TagManager:
   - PlayerBall
   - NPCBall
   - Backboard
+  - Rim
   layers:
   - Default
   - TransparentFX
