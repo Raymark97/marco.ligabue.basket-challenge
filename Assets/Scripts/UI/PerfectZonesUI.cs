@@ -37,11 +37,13 @@ namespace UI {
 			var start = Mathf.Clamp01(center - threshold);
 			var end = Mathf.Clamp01(center + threshold);
 
-			var zoneWidth = (end - start) * _sliderRect.rect.width;
-			var zoneCenter = (start + end) * 0.5f * _sliderRect.rect.width;
+			var zoneHeight = (end - start) * _sliderRect.rect.height;
 
-			zone.sizeDelta = new(zoneWidth, zone.sizeDelta.y);
-			zone.anchoredPosition = new(zoneCenter - _sliderRect.rect.width * 0.5f, 0);
+			var zoneCenter = (start + end) * 0.5f * _sliderRect.rect.height;
+
+			zone.sizeDelta = new(zone.sizeDelta.x, zoneHeight);
+			zone.anchoredPosition = new(0, zoneCenter - _sliderRect.rect.height * 0.5f);
 		}
+
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Core {
 	public class GameManager : MonoBehaviour {
@@ -15,6 +16,10 @@ namespace Core {
 		private void Awake() {
 			if (Instance == null) Instance = this;
 			else { Destroy(gameObject); }
+		}
+		
+		public void BackToMenu() {
+			SceneManager.LoadScene("MainMenu");
 		}
 	}
 }

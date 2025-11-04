@@ -1,6 +1,7 @@
 using Core;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Gameplay {
@@ -8,9 +9,10 @@ namespace Gameplay {
 		[Header("References")]
 		[SerializeField] private Slider slider;
 		[SerializeField] private GameEvents gameEvents;
-
+		
 		[Header("Input")]
-		[SerializeField] private float sensitivity = 0.1f;
+		[SerializeField] private float mouseSensitivity = 0.1f;
+		[SerializeField] private float touchSensitivity = 0.1f;
 		[SerializeField] private float maxTime = 1f;
 
 		[Header("Gameplay")]
@@ -28,19 +30,28 @@ namespace Gameplay {
 
 
 		private GameManager _gm;
-		private Vector3 _directShotVelocity = new();
-		private Vector3 _bankShotVelocity = new();
+		private Vector3 _directShotVelocity;
+		private Vector3 _bankShotVelocity;
 		private Vector3 _shotStartPoint;
-		
+
 		private bool _fireballActive;
+		private float _currentSensitivity;
 
 		private void Start() {
 			_gm = GameManager.Instance;
 			gameEvents.OnFireStateChanged.AddListener(TrackFireballState);
 			gameEvents.OnScoreAdded.AddListener(OnScoreAdded);
 			gameEvents.OnShotMiss.AddListener(OnShotMiss);
+
+		#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
+			_currentSensitivity = touchSensitivity;
+			Debug.Log("Using touch sensitivity");
+		#else
+		    _currentSensitivity = mouseSensitivity;
+			Debug.Log("Using mouse sensitivity");
+		#endif
 		}
-		
+
 		private void TrackFireballState(int playerId, bool state) {
 			if (playerId != 0) return;
 			_fireballActive = state;
@@ -64,7 +75,7 @@ namespace Gameplay {
 			HandleInput();
 
 			if (_isDragging)
-				slider.value = Mathf.Clamp01((_endY - _startY) * sensitivity);
+				slider.value = Mathf.Clamp01((_endY - _startY) * _currentSensitivity);
 		}
 
 		private void HandleInput() {
@@ -140,8 +151,8 @@ namespace Gameplay {
 			gameEvents.OnBallThrown.Invoke(0, ball);
 
 			var type = perfectDirect ? "PERFETTO Diretto" :
-				perfectBank ? "PERFETTO Tabellone" :
-				isBank ? "Bank approssimato" : "Diretto approssimato";
+			perfectBank ? "PERFETTO Tabellone" :
+			isBank ? "Bank approssimato" : "Diretto approssimato";
 
 			Debug.Log($"Tiro: {type} (slider={charge:F2}, power={chargePower:F2})");
 		}
@@ -154,14 +165,13 @@ namespace Gameplay {
 				Debug.LogWarning("Couldn't calculate direct shot!");
 
 			if (!ShotCalculator.CalculateBankShot(_shotStartPoint, _gm.hoop.position, _gm.backboard, _gm.maxHeight,
-				    out _bankShotVelocity))
+			    out _bankShotVelocity))
 				Debug.LogWarning("Couldn't calculate bank shot!");
 
 			var directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-			var bankValue   = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-			
+			var bankValue = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+
 			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, perfectThreshold);
 		}
-
 	}
 }
