@@ -125,6 +125,7 @@ namespace Systems {
 	        player.enabled = false;
 	        Debug.Log("Match ended — time is up!");
 	        AudioManager.Instance.PlaySFXAtPoint("MatchEnd", playerCamPos.transform);
+	        gameEvents.OnMatchEnded.Invoke();
         }
         
         private IEnumerator BonusRoutine() {

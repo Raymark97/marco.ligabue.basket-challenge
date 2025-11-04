@@ -27,12 +27,15 @@ namespace Systems {
 			gameEvents.OnScoreAdded.AddListener(AddPoints);
 			gameEvents.OnBackboardBonusUpdated.AddListener(SetBackboardBonus);
 			gameEvents.OnShotMiss.AddListener(OnMiss);
+			gameEvents.OnMatchEnded.AddListener(OnMatchEnded);
 		}
+		
 
 		private void OnDisable() {
 			gameEvents.OnScoreAdded.RemoveListener(AddPoints);
 			gameEvents.OnBackboardBonusUpdated.RemoveListener(SetBackboardBonus);
 			gameEvents.OnShotMiss.RemoveListener(OnMiss);
+			gameEvents.OnMatchEnded.RemoveListener(OnMatchEnded);
 		}
 
 		private void SetBackboardBonus(int bonus) {
@@ -88,6 +91,11 @@ namespace Systems {
 
 		private void OnMiss(int playerId) {
 			EndFireMode(playerId);
+		}
+		
+		private void OnMatchEnded() {
+			EndFireMode(0);
+			EndFireMode(1);
 		}
 
 		private void EndFireMode(int playerId) {

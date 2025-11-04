@@ -2,6 +2,7 @@ using Core;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI {
@@ -13,6 +14,9 @@ namespace UI {
 		[SerializeField] private TextMeshProUGUI backboardText;
 		[SerializeField] private Slider fireballChargeSlider;
 		[SerializeField] private TextMeshProUGUI timer;
+		[SerializeField] private GameObject mainCanvas;
+		[SerializeField] private GameObject rewardCanvas;
+		[SerializeField] private RewardManager rewardManager;
 		
 		[Header("Settings")]
 		[SerializeField] private Color fireballActiveColor = Color.red;
@@ -24,7 +28,14 @@ namespace UI {
 			gameEvents.OnFireChargeChanged.AddListener(UpdateFireballChargeSlider);
 			gameEvents.OnFireStateChanged.AddListener(UpdateFireballChargeEffect);
 			gameEvents.OnTimerChanged.AddListener(ChangeTimer);
+			gameEvents.OnMatchEnded.AddListener(ShowRewards);
 			fireballChargeSlider.fillRect.GetComponent<Image>().color = fireballChargingColor;
+			
+		}
+		private void ShowRewards() {
+			mainCanvas.SetActive(false);
+			rewardManager.UpdateScore(int.Parse(playerScoreText.text),int.Parse(npcScoreText.text));
+			rewardCanvas.SetActive(true);
 		}
 		private void ChangeTimer(int timerValue) {
 			timer.text = TimeSpan.FromSeconds(timerValue).ToString(@"mm\:ss");
