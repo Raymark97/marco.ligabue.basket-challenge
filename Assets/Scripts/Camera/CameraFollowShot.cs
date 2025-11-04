@@ -10,6 +10,11 @@ namespace Camera {
 
 		[Header("Camera Settings")]
 		[SerializeField] private float zoomDistance = 3f;
+		[SerializeField] private float heightOffset = 2f;
+		[SerializeField] private float rotationSmooth = 3f;
+		[SerializeField] private float zoomSmooth = 2f;
+		[SerializeField] private float maxFollowDistance = 10f;
+		[SerializeField] private float followDistance = 2f;
 		[SerializeField] private float followSmooth = 2f;
 		[SerializeField] private float zoomFOV = 40f;
 		[SerializeField] private float baseHeightOffset = 1.5f;
@@ -59,40 +64,52 @@ namespace Camera {
 		}
 
 		private IEnumerator FollowRoutine(Transform ball) {
-			yield return new WaitForSeconds(startDelay);
 			_ball = ball;
-
-			var zoomPos = hoop.position - hoop.forward * zoomDistance + Vector3.up * baseHeightOffset;
-
-			var t = 0f;
+			var rb = _ball.GetComponent<Rigidbody>();
 			var startFOV = _cam.fieldOfView;
-			while (t < 1f) {
-				t += Time.deltaTime * 1f;
-				_cam.fieldOfView = Mathf.Lerp(startFOV, zoomFOV, t);
-				_cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, t * 0.8f);
-				_cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
-				Quaternion.LookRotation(hoop.position - _cam.transform.position), t * 0.8f);
-				yield return null;
-			}
 
+			// memorizziamo l'altezza del ferro
+			float hoopHeight = hoop.position.y;
 
-			var previousY = _ball.position.y;
 			while (_ball) {
-				var lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.7f);
+				// distanza dalla palla al canestro
+				float distToHoop = Vector3.Distance(_ball.position, hoop.position);
 
+				// Zoom dinamico: più la palla si avvicina al ferro, più riduciamo il FOV
+				float targetFOV = Mathf.Lerp(zoomFOV, startFOV, distToHoop / maxFollowDistance);
+				_cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, targetFOV, Time.deltaTime * zoomSmooth);
 
-				if (_ball.position.y < previousY - 0.05f)
+				// Posizione: dietro la palla ma con altezza vincolata al ferro
+				Vector3 followOffset = -rb.velocity.normalized * followDistance;
+				Vector3 targetPos = _ball.position + followOffset;
+				targetPos.y = Mathf.Lerp(targetPos.y, hoopHeight + heightOffset, 0.7f); // si stabilizza vicino al ferro
+
+				_cam.transform.position = Vector3.Lerp(
+				_cam.transform.position,
+				targetPos,
+				Time.deltaTime * followSmooth
+				);
+
+				// Rotazione: guarda verso un punto tra la palla e il canestro, ma limitando la componente verticale
+				Vector3 lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.6f);
+				lookTarget.y = hoopHeight; // mantiene lo sguardo quasi orizzontale
+				Vector3 lookDir = lookTarget - _cam.transform.position;
+
+				_cam.transform.rotation = Quaternion.Slerp(
+				_cam.transform.rotation,
+				Quaternion.LookRotation(lookDir),
+				Time.deltaTime * rotationSmooth
+				);
+
+				// Interrompe il follow appena la palla inizia a scendere
+				if (rb.velocity.y < 0)
 					break;
-				previousY = _ball.position.y;
-
-				_cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, Time.deltaTime * followSmooth);
-				_cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
-				Quaternion.LookRotation(lookTarget - _cam.transform.position), Time.deltaTime * followSmooth);
 
 				yield return null;
 			}
-			yield return new WaitForSeconds(returnDelay);
 
+			// Pausa breve per mostrare il risultato
+			yield return new WaitForSeconds(returnDelay);
 			ReturnToPlayer();
 		}
 
