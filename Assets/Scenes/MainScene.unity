@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 82334819}
   - component: {fileID: 82334821}
   m_Layer: 0
-  m_Name: ' AudioManager'
+  m_Name: AudioManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -290,7 +290,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mixer: {fileID: 24100000, guid: cf23e75ebff39d846909874ec35b143c, type: 2}
   library: {fileID: 11400000, guid: 5fba788f5822adf4daea2023e49acb37, type: 2}
-  musicAudioSource: {fileID: 0}
 --- !u!4 &82334820
 Transform:
   m_ObjectHideFlags: 0
@@ -3380,7 +3379,7 @@ GameObject:
   - component: {fileID: 1940490768}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3603,6 +3602,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 847583743767007936, guid: 521ecd25b32707b41aea96abf81ce872,
+        type: 3}
+      propertyPath: m_TagString
+      value: Floor
       objectReference: {fileID: 0}
     - target: {fileID: 847583743767007936, guid: 521ecd25b32707b41aea96abf81ce872,
         type: 3}

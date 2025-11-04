@@ -86,16 +86,8 @@ namespace Systems {
 			EndFireMode(playerId);
 		}
 
-		public void OnMiss(int playerId) {
-			ref var active = ref playerId == 0 ? ref _fireActivePlayer : ref _fireActiveNPC;
-			ref var charge = ref playerId == 0 ? ref _fireChargePlayer : ref _fireChargeNPC;
-			charge = 0;
-			gameEvents.OnFireChargeChanged.Invoke(playerId, 0f);
-			Debug.Log("Player " + playerId + " has missed the shot.");
-			if (!active) return;
+		private void OnMiss(int playerId) {
 			EndFireMode(playerId);
-			
-			
 		}
 
 		private void EndFireMode(int playerId) {

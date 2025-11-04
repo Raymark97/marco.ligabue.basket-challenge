@@ -44,7 +44,7 @@ namespace Gameplay {
 			}
 			Destroy(gameObject);
 		}
-		
+
 		private void ApplyVisuals() {
 			//TODO set fireball material
 			fireballParticles.gameObject.SetActive(fireballActive);
@@ -52,12 +52,18 @@ namespace Gameplay {
 		}
 
 		private void OnCollisionEnter(Collision collision) {
+			var impact = collision.relativeVelocity.magnitude;	
+			var normalized = Mathf.InverseLerp(0f, 10f, impact);
+			var volume = Mathf.Pow(normalized, 0.5f);
+
 			if (!_hasBounced && collision.gameObject.CompareTag("Backboard")) {
 				bankShot = true;
 				_hasBounced = true;
-				AudioManager.Instance.PlaySFX("BackboardHit", audioSource);
+				AudioManager.Instance.PlaySFX("BackboardHit", audioSource, volume);
 			} else if (collision.gameObject.CompareTag("Rim")) {
-				AudioManager.Instance.PlaySFX("RimHit", audioSource);
+				AudioManager.Instance.PlaySFX("RimHit", audioSource, volume);
+			} else if (collision.gameObject.CompareTag("Floor")) {
+				AudioManager.Instance.PlaySFX("FloorHit", audioSource, volume);
 			}
 		}
 	}

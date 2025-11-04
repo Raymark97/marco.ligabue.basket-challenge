@@ -5,20 +5,19 @@ using UnityEngine.UI;
 
 namespace Gameplay {
 	public class PlayerController : MonoBehaviour, IShotController {
-		[Header("References")] [SerializeField]
-		private Slider slider;
-
+		[Header("References")]
+		[SerializeField] private Slider slider;
 		[SerializeField] private GameEvents gameEvents;
 
-
-		[Header("Input")] [SerializeField] private float sensitivity = 0.1f;
+		[Header("Input")]
+		[SerializeField] private float sensitivity = 0.1f;
 		[SerializeField] private float maxTime = 1f;
 
-		[Header("Gameplay")] [SerializeField] private GameObject ballPrefab;
+		[Header("Gameplay")]
+		[SerializeField] private GameObject ballPrefab;
 		[SerializeField, Range(0f, 0.3f)] private float perfectThreshold = 0.1f;
 		[SerializeField] private float maxShotPowerMultiplier = 1.2f;
 		[SerializeField] private float minPowerFraction = 0.3f;
-
 		[SerializeField] private float shotStartHeight = 1.8f;
 
 		private bool _isDragging;

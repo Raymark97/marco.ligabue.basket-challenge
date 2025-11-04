@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using Audio;
+using Core;
 using Gameplay;
 using System.Collections;
 using System.Linq;
@@ -123,6 +124,7 @@ namespace Systems {
 	        npc.StopShooting();
 	        player.enabled = false;
 	        Debug.Log("Match ended — time is up!");
+	        AudioManager.Instance.PlaySFXAtPoint("MatchEnd", playerCamPos.transform);
         }
         
         private IEnumerator BonusRoutine() {

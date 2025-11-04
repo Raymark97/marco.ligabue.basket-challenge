@@ -21,11 +21,12 @@ namespace Systems {
 			var playerId = -1;
 			if (other.CompareTag("PlayerBall")) {
 				playerId = 0;
-				AudioManager.Instance.PlaySFX("Score", scoreSource);
 			} else if (other.CompareTag("NPCBall"))
 				playerId = 1;
 
 			if (playerId == -1) return;
+			
+			AudioManager.Instance.PlaySFX("Score", scoreSource);
 
 			// Evita doppi trigger
 			other.tag = "Untagged";

@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: AudioLibrary
   m_EditorClassIdentifier: 
   entries:
-  - key: BackboardHit
-    clip: {fileID: 0}
   - key: Score
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 9ffac2f06946b7243a3ce285bcb13d80, type: 3}
+  - key: BackboardHit
+    clip: {fileID: 8300000, guid: 203c1501f15b69f4aa708468259ae0e5, type: 3}
   - key: RimHit
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 203c1501f15b69f4aa708468259ae0e5, type: 3}
+  - key: FloorHit
+    clip: {fileID: 8300000, guid: 203c1501f15b69f4aa708468259ae0e5, type: 3}
   - key: GameMusic
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: ad7aaee29f1b9e5409e077603bf1068d, type: 3}
+  - key: MatchEnd
+    clip: {fileID: 8300000, guid: 31701061fbf3c0541b4d147ee93c7876, type: 3}
