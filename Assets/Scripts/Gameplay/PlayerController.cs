@@ -36,6 +36,8 @@ namespace Gameplay {
 
 		private bool _fireballActive;
 		private float _currentSensitivity;
+		private float directValue;
+		private float bankValue;
 
 		private void Start() {
 			_gm = GameManager.Instance;
@@ -113,19 +115,15 @@ namespace Gameplay {
 			var direct = _directShotVelocity;
 			var bank = _bankShotVelocity;
 
-			var directMag = direct.magnitude;
-			var bankMag = bank.magnitude;
-
-
+			var diffDirect = Mathf.Abs(charge - directValue);
+			var diffBank = Mathf.Abs(charge - bankValue);
+			
+			var perfectDirect =  diffDirect <= perfectThreshold;
+			var perfectBank = diffBank <= perfectThreshold;
+			
 			var chargePower = Mathf.Lerp(minPowerFraction, maxShotPowerMultiplier, charge);
 
-			var currentPower = chargePower * directMag;
-
-			var diffDirect = Mathf.Abs(currentPower - directMag) / directMag;
-			var diffBank = Mathf.Abs(currentPower - bankMag) / bankMag;
-
-			var perfectDirect = diffDirect <= perfectThreshold;
-			var perfectBank = diffBank <= perfectThreshold;
+			var currentPower = chargePower * direct.magnitude;
 
 			Vector3 chosenVelocity;
 			var isBank = false;
@@ -136,7 +134,6 @@ namespace Gameplay {
 				chosenVelocity = perfectBank ? bank : bank.normalized * currentPower;
 				isBank = true;
 			}
-
 
 			var ball = Instantiate(ballPrefab, _shotStartPoint, Quaternion.identity);
 			var rb = ball.GetComponent<Rigidbody>();
@@ -168,9 +165,9 @@ namespace Gameplay {
 			    out _bankShotVelocity))
 				Debug.LogWarning("Couldn't calculate bank shot!");
 
-			var directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-			var bankValue = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-
+			directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+			bankValue = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+			Debug.Log($"Values: {directValue} -  {bankValue}");
 			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, perfectThreshold);
 		}
 	}

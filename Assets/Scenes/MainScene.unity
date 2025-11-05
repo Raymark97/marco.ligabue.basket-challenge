@@ -2640,10 +2640,10 @@ RectTransform:
   m_Father: {fileID: 1782940066}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1048494690
 MonoBehaviour:
@@ -3183,10 +3183,10 @@ RectTransform:
   m_Father: {fileID: 1048494689}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1380800677
 MonoBehaviour:
@@ -3321,10 +3321,10 @@ RectTransform:
   m_Father: {fileID: 1048494689}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1480540975
 MonoBehaviour:
@@ -4581,7 +4581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 331940275}
   gameEvents: {fileID: 11400000, guid: b78706348a6289143b087b60bd1cfecb, type: 2}
-  mouseSensitivity: 0.04
+  mouseSensitivity: 0.004
   touchSensitivity: 0.001
   maxTime: 0.75
   ballPrefab: {fileID: 7302228966777979887, guid: 81f8f4e2023ea7e49a8eac430185e408,

@@ -31,19 +31,21 @@ namespace UI {
 			UpdateZone(bankZone.rectTransform, bankValue, threshold);
 		}
 
-		private void UpdateZone(RectTransform zone, float center, float threshold) {
-			if (!zone || _sliderRect == null) return;
+		private void UpdateZone(RectTransform zone, float center, float threshold)
+		{
+			if (zone == null || _sliderRect == null) return;
 
 			var start = Mathf.Clamp01(center - threshold);
 			var end = Mathf.Clamp01(center + threshold);
+			Debug.Log($"Value: {center}, Boundaries: {start} - {end}");
 
-			var zoneHeight = (end - start) * _sliderRect.rect.height;
+			zone.anchorMin = new(0f, start);
+			zone.anchorMax = new(1f, end);
 
-			var zoneCenter = (start + end) * 0.5f * _sliderRect.rect.height;
-
-			zone.sizeDelta = new(zone.sizeDelta.x, zoneHeight);
-			zone.anchoredPosition = new(0, zoneCenter - _sliderRect.rect.height * 0.5f);
+			zone.offsetMin = Vector2.zero;
+			zone.offsetMax = Vector2.zero;
+			zone.anchoredPosition = Vector2.zero;
+			zone.sizeDelta = Vector2.zero;
 		}
-
 	}
 }
