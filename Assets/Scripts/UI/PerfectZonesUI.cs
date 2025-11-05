@@ -32,16 +32,18 @@ namespace UI {
 		}
 
 		private void UpdateZone(RectTransform zone, float center, float threshold) {
-			if (zone == null || _sliderRect == null) return;
-			
+			if (!zone || _sliderRect == null) return;
+
 			var start = Mathf.Clamp01(center - threshold);
 			var end = Mathf.Clamp01(center + threshold);
-			
-			zone.anchorMin = new Vector2(0f, start);
-			zone.anchorMax = new Vector2(1f, end);
-			
-			zone.anchoredPosition = Vector2.zero;
-			zone.sizeDelta = Vector2.zero;
+
+			var zoneHeight = (end - start) * _sliderRect.rect.height;
+
+			var zoneCenter = (start + end) * 0.5f * _sliderRect.rect.height;
+
+			zone.sizeDelta = new(zone.sizeDelta.x, zoneHeight);
+			zone.anchoredPosition = new(0, zoneCenter - _sliderRect.rect.height * 0.5f);
 		}
+
 	}
 }
