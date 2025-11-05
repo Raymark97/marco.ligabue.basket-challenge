@@ -5239,7 +5239,8 @@ GameObject:
   - component: {fileID: 8917228610572054925}
   - component: {fileID: 7654768562068816515}
   - component: {fileID: 3550373119688466642}
-  - component: {fileID: 2927136601539489942}
+  - component: {fileID: 4644037002621437536}
+  - component: {fileID: 8024397720657787739}
   m_Layer: 6
   m_Name: bbc_ball_body
   m_TagString: Untagged
@@ -5314,7 +5315,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2927136601539489942
+--- !u!64 &4644037002621437536
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5323,8 +5324,21 @@ MeshCollider:
   m_GameObject: {fileID: 9182969748906864726}
   m_Material: {fileID: 13400000, guid: b8589ea2557f26043bee47af62505629, type: 2}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 1952791710130339654, guid: f90eb71495901ea45abe38a8bb83b088, type: 3}
+--- !u!135 &8024397720657787739
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182969748906864726}
+  m_Material: {fileID: 13400000, guid: b8589ea2557f26043bee47af62505629, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.0009
+  m_Center: {x: 0, y: 0, z: 0}
