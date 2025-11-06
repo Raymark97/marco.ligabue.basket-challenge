@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace Camera {
 	public class CameraFollowShot : MonoBehaviour {
-		[Header("References")]
-		[SerializeField] private GameEvents gameEvents;
+		[Header("References")] [SerializeField]
+		private GameEvents gameEvents;
+
 		[SerializeField] private Transform hoop;
 
-		[Header("Camera Settings")]
-		[SerializeField] private float zoomDistance = 3f;
+		[Header("Camera Settings")] [SerializeField]
+		private float zoomDistance = 3f;
+
 		[SerializeField] private float followSmooth = 2f;
 		[SerializeField] private float zoomFOV = 40f;
 		[SerializeField] private float baseHeightOffset = 1.5f;
@@ -20,6 +22,12 @@ namespace Camera {
 		private float _baseFOV;
 		private Coroutine _routine;
 		private Transform _ball;
+		public float maxFollowDistance = 12f;
+		public float heightOffset = .3f;
+		public float zoomSmooth = 3;
+		public float followDistance = 2.5f;
+		public float rotationSmooth = 6;
+
 
 		private void Awake() {
 			_cam = GetComponentInChildren<UnityEngine.Camera>();
@@ -46,6 +54,7 @@ namespace Camera {
 			if (playerId != 0) return;
 			if (_routine != null)
 				StopCoroutine(_routine);
+
 			_routine = StartCoroutine(FollowRoutine(ball.transform));
 		}
 
@@ -59,46 +68,53 @@ namespace Camera {
 		}
 
 		private IEnumerator FollowRoutine(Transform ball) {
-			yield return new WaitForSeconds(startDelay);
 			_ball = ball;
-
-			var zoomPos = hoop.position - hoop.forward * zoomDistance + Vector3.up * baseHeightOffset;
-
-			var t = 0f;
+			var rb = _ball.GetComponent<Rigidbody>();
 			var startFOV = _cam.fieldOfView;
-			while (t < 1f) {
-				t += Time.deltaTime * 1f;
-				_cam.fieldOfView = Mathf.Lerp(startFOV, zoomFOV, t);
-				_cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, t * 0.8f);
-				_cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
-				Quaternion.LookRotation(hoop.position - _cam.transform.position), t * 0.8f);
-				yield return null;
-			}
 
+			var hoopHeight = hoop.position.y;
 
-			var previousY = _ball.position.y;
 			while (_ball) {
-				var lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.7f);
+				var distToHoop = Vector3.Distance(_ball.position, hoop.position);
 
+				var targetFOV = Mathf.Lerp(zoomFOV, startFOV, distToHoop / maxFollowDistance);
+				_cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, targetFOV, Time.deltaTime * zoomSmooth);
 
-				if (_ball.position.y < previousY - 0.05f)
+				var followOffset = -rb.velocity.normalized * followDistance;
+				var targetPos = _ball.position + followOffset;
+				targetPos.y = Mathf.Lerp(targetPos.y, hoopHeight + heightOffset, 0.7f);
+
+				_cam.transform.position = Vector3.Lerp(
+					_cam.transform.position,
+					targetPos,
+					Time.deltaTime * followSmooth
+				);
+
+				var lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.6f);
+				lookTarget.y = hoopHeight;
+				var lookDir = lookTarget - _cam.transform.position;
+
+				_cam.transform.rotation = Quaternion.Slerp(
+					_cam.transform.rotation,
+					Quaternion.LookRotation(lookDir),
+					Time.deltaTime * rotationSmooth
+				);
+
+				if (rb.velocity.y < 0)
 					break;
-				previousY = _ball.position.y;
-
-				_cam.transform.position = Vector3.Lerp(_cam.transform.position, zoomPos, Time.deltaTime * followSmooth);
-				_cam.transform.rotation = Quaternion.Slerp(_cam.transform.rotation,
-				Quaternion.LookRotation(lookTarget - _cam.transform.position), Time.deltaTime * followSmooth);
 
 				yield return null;
 			}
-			yield return new WaitForSeconds(returnDelay);
 
+			yield return new WaitForSeconds(returnDelay);
 			ReturnToPlayer();
 		}
+
 
 		private void ReturnToPlayer() {
 			if (_routine != null)
 				StopCoroutine(_routine);
+
 			_cam.transform.position = transform.position;
 			_cam.transform.rotation = transform.rotation;
 			_cam.fieldOfView = _baseFOV;
