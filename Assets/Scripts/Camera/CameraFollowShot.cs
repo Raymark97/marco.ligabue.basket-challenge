@@ -3,31 +3,38 @@ using System.Collections;
 using UnityEngine;
 
 namespace Camera {
+	/// <summary>
+	/// Manages the dynamic camera behaviour during a player's shot.
+	/// The camera follows the ball while it travels towards the hoop,
+	/// applies a smooth zoom effect, and returns to the player afterwards.
+	/// </summary>
 	public class CameraFollowShot : MonoBehaviour {
-		[Header("References")] [SerializeField]
-		private GameEvents gameEvents;
-
+		[Header("References")]
+		[SerializeField] private GameEvents gameEvents;
 		[SerializeField] private Transform hoop;
 
-		[Header("Camera Settings")] [SerializeField]
-		private float zoomDistance = 3f;
+		[Header("Camera Settings")]
+		[SerializeField, Tooltip("How smoothly the camera follows the ball's position.")]
+		private float followSmooth = 2f;
+		[SerializeField, Tooltip("Field of View when zoomed in near the hoop.")]
+		private float zoomFOV = 40f;
+		[SerializeField, Tooltip("Delay before returning the camera to the player after a shot ends.")]
+		private float returnDelay = 0.8f;
+		[SerializeField, Tooltip("Maximum distance from the hoop used to compute zoom interpolation.")]
+		private float maxFollowDistance = 12f;
+		[SerializeField, Tooltip("Vertical offset applied when following the ball to stay near hoop height.")]
+		private float heightOffset = 0.3f;
+		[SerializeField, Tooltip("How quickly the camera adjusts its FOV while zooming.")]
+		private float zoomSmooth = 3f;
+		[SerializeField, Tooltip("Distance to maintain behind the ball during flight.")]
+		private float followDistance = 2.5f;
+		[SerializeField, Tooltip("How smoothly the camera rotates toward the target hoop.")]
+		private float rotationSmooth = 6f;
 
-		[SerializeField] private float followSmooth = 2f;
-		[SerializeField] private float zoomFOV = 40f;
-		[SerializeField] private float baseHeightOffset = 1.5f;
-		[SerializeField] private float returnDelay = 0.8f;
-		[SerializeField] private float startDelay = 0.5f;
 
 		private UnityEngine.Camera _cam;
 		private float _baseFOV;
 		private Coroutine _routine;
-		private Transform _ball;
-		public float maxFollowDistance = 12f;
-		public float heightOffset = .3f;
-		public float zoomSmooth = 3;
-		public float followDistance = 2.5f;
-		public float rotationSmooth = 6;
-
 
 		private void Awake() {
 			_cam = GetComponentInChildren<UnityEngine.Camera>();
@@ -38,66 +45,86 @@ namespace Camera {
 			ReturnToPlayer();
 		}
 
+		/// <summary>
+		/// Registers to global gameplay events.
+		/// </summary>
 		private void OnEnable() {
 			gameEvents.OnBallThrown.AddListener(OnBallThrown);
 			gameEvents.OnScoreAdded.AddListener(OnShotEnded);
 			gameEvents.OnShotMiss.AddListener(OnShotEnded);
 		}
 
+		/// <summary>
+		/// Unregisters from global gameplay events.
+		/// </summary>
 		private void OnDisable() {
 			gameEvents.OnBallThrown.RemoveListener(OnBallThrown);
 			gameEvents.OnScoreAdded.RemoveListener(OnShotEnded);
 			gameEvents.OnShotMiss.RemoveListener(OnShotEnded);
 		}
 
+		/// <summary>
+		/// Starts following the player's ball when a new shot is thrown.
+		/// </summary>
 		private void OnBallThrown(int playerId, GameObject ball) {
 			if (playerId != 0) return;
+
 			if (_routine != null)
 				StopCoroutine(_routine);
 
 			_routine = StartCoroutine(FollowRoutine(ball.transform));
 		}
 
+		/// <summary>
+		/// Returns the camera to the player view when a shot ends (scored or missed).
+		/// </summary>
 		private void OnShotEnded(int playerId) {
 			if (playerId != 0) return;
 			ReturnToPlayer();
 		}
+
 		private void OnShotEnded(int playerId, bool __, bool ___) {
 			if (playerId != 0) return;
 			ReturnToPlayer();
 		}
 
+		/// <summary>
+		/// Follows the ball while it is moving upwards.
+		/// Adjusts position, rotation, and FOV dynamically.
+		/// Stops following when the ball starts descending.
+		/// </summary>
 		private IEnumerator FollowRoutine(Transform ball) {
-			_ball = ball;
-			var rb = _ball.GetComponent<Rigidbody>();
+			var rb = ball.GetComponent<Rigidbody>();
 			var startFOV = _cam.fieldOfView;
-
 			var hoopHeight = hoop.position.y;
 
-			while (_ball) {
-				var distToHoop = Vector3.Distance(_ball.position, hoop.position);
+			while (ball) {
+				var distToHoop = Vector3.Distance(ball.position, hoop.position);
 
+				// Adjust zoom based on distance
 				var targetFOV = Mathf.Lerp(zoomFOV, startFOV, distToHoop / maxFollowDistance);
 				_cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, targetFOV, Time.deltaTime * zoomSmooth);
 
+				// Smooth follow motion
 				var followOffset = -rb.velocity.normalized * followDistance;
-				var targetPos = _ball.position + followOffset;
+				var targetPos = ball.position + followOffset;
 				targetPos.y = Mathf.Lerp(targetPos.y, hoopHeight + heightOffset, 0.7f);
 
 				_cam.transform.position = Vector3.Lerp(
-					_cam.transform.position,
-					targetPos,
-					Time.deltaTime * followSmooth
+				_cam.transform.position,
+				targetPos,
+				Time.deltaTime * followSmooth
 				);
 
-				var lookTarget = Vector3.Lerp(_ball.position, hoop.position, 0.6f);
+				// Smooth rotation toward hoop
+				var lookTarget = Vector3.Lerp(ball.position, hoop.position, 0.6f);
 				lookTarget.y = hoopHeight;
 				var lookDir = lookTarget - _cam.transform.position;
 
 				_cam.transform.rotation = Quaternion.Slerp(
-					_cam.transform.rotation,
-					Quaternion.LookRotation(lookDir),
-					Time.deltaTime * rotationSmooth
+				_cam.transform.rotation,
+				Quaternion.LookRotation(lookDir),
+				Time.deltaTime * rotationSmooth
 				);
 
 				if (rb.velocity.y < 0)
@@ -110,7 +137,9 @@ namespace Camera {
 			ReturnToPlayer();
 		}
 
-
+		/// <summary>
+		/// Resets the camera to its default position, rotation, and FOV.
+		/// </summary>
 		private void ReturnToPlayer() {
 			if (_routine != null)
 				StopCoroutine(_routine);

@@ -10,7 +10,7 @@ namespace Core {
 		public UnityEvent<int, bool, bool> OnScoreAdded = new();			// (playerId, perfect, bankShot)
 		public UnityEvent<int, int> OnScoreUpdated = new();					// (playerId, totalScore)
 		public UnityEvent<int> OnBackboardBonusUpdated = new();				// (bonus amount)
-		public UnityEvent<int> OnTimerChanged = new();								// (playerId)
+		public UnityEvent<int> OnTimerChanged = new();						// (playerId)
 		public UnityEvent OnMatchEnded = new();
 
 		// ─────────────────────────────

@@ -2,6 +2,10 @@
 using UnityEngine.SceneManagement;
 
 namespace Core {
+	/// <summary>
+	/// Central coordinator for global gameplay references and high-level scene transitions.
+	/// Provides a singleton access point for shared objects such as the hoop, backboard, and event system.
+	/// </summary>
 	public class GameManager : MonoBehaviour {
 		public static GameManager Instance;
 
@@ -18,6 +22,9 @@ namespace Core {
 			else { Destroy(gameObject); }
 		}
 		
+		/// <summary>
+		/// Loads the main menu scene.
+		/// </summary>
 		public void BackToMenu() {
 			SceneManager.LoadScene("MainMenu");
 		}

@@ -4,28 +4,32 @@ using Audio;
 using UnityEngine;
 
 namespace Gameplay {
+	/// <summary>
+	/// Controls the behaviour and lifecycle of a thrown basketball.
+	/// Handles visual effects, collision sounds, and automatic cleanup.
+	/// </summary>
 	[RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(AudioSource))]
 	public class BallController : MonoBehaviour {
-		[Header("Lifetime")]
-		[SerializeField] private float destroyDelay = 5f;
-
-		[Header("Shot Info")]
-		public bool bankShot;
-		public bool perfectShot;
-		public bool fireballActive;
-
+		
 		[Header("References")]
 		[SerializeField] private GameEvents gameEvents;
 		[SerializeField] private ParticleSystem fireballParticles;
 		[SerializeField] private TrailRenderer trailRenderer;
-
-		private Rigidbody _rb;
+		
+		[Header("Shot Settings")]
+		[SerializeField] private float destroyDelay = 5f;
+		
+		[Header("Debug")]
+		public bool bankShot;
+		public bool perfectShot;
+		public bool fireballActive;
+		
+		
 		private bool _hasBounced;
-		private AudioSource audioSource;
-
+		private AudioSource _audioSource;
+		
 		private void Awake() {
-			_rb = GetComponent<Rigidbody>();
-			audioSource = GetComponent<AudioSource>();
+			_audioSource = GetComponent<AudioSource>();
 		}
 
 		private void Start() {
@@ -33,6 +37,9 @@ namespace Gameplay {
 			ApplyVisuals();
 		}
 
+		/// <summary>
+		/// Destroys the ball after a delay and triggers a miss event if no score occurred.
+		/// </summary>
 		private IEnumerator AutoDestroy() {
 			yield return new WaitForSeconds(destroyDelay);
 
@@ -45,12 +52,19 @@ namespace Gameplay {
 			Destroy(gameObject);
 		}
 
+		/// <summary>
+		/// Activates the appropriate trail or fireball effects based on shot state.
+		/// </summary>
 		private void ApplyVisuals() {
-			//TODO set fireball material
 			fireballParticles.gameObject.SetActive(fireballActive);
 			trailRenderer.gameObject.SetActive(perfectShot && !fireballActive);
 		}
 
+		/// <summary>
+		/// Handles collisions with the environment, triggering appropriate sound effects.
+		/// The volume is scaled based on impact strength.
+		/// </summary>
+		/// <param name="collision">Collision data from Unity's physics system.</param>
 		private void OnCollisionEnter(Collision collision) {
 			var impact = collision.relativeVelocity.magnitude;	
 			var normalized = Mathf.InverseLerp(0f, 10f, impact);
@@ -59,11 +73,13 @@ namespace Gameplay {
 			if (!_hasBounced && collision.gameObject.CompareTag("Backboard")) {
 				bankShot = true;
 				_hasBounced = true;
-				AudioManager.Instance.PlaySFX("BackboardHit", audioSource, volume);
-			} else if (collision.gameObject.CompareTag("Rim")) {
-				AudioManager.Instance.PlaySFX("RimHit", audioSource, volume);
-			} else if (collision.gameObject.CompareTag("Floor")) {
-				AudioManager.Instance.PlaySFX("FloorHit", audioSource, volume);
+				AudioManager.Instance.PlaySFX("BackboardHit", _audioSource, volume);
+			} 
+			else if (collision.gameObject.CompareTag("Rim")) {
+				AudioManager.Instance.PlaySFX("RimHit", _audioSource, volume);
+			} 
+			else if (collision.gameObject.CompareTag("Floor")) {
+				AudioManager.Instance.PlaySFX("FloorHit", _audioSource, volume);
 			}
 		}
 	}
