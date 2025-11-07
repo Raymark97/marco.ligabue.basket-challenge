@@ -54,8 +54,8 @@ namespace Gameplay {
 
 		private bool _fireballActive;
 		private float _currentSensitivity;
-		private float directValue;
-		private float bankValue;
+		private float _directValue;
+		private float _bankValue;
 
 		/// <summary>
 		/// Initializes references, subscribes to gameplay events, and sets sensitivity
@@ -177,8 +177,8 @@ namespace Gameplay {
 			var direct = _directShotVelocity;
 			var bank = _bankShotVelocity;
 
-			var diffDirect = Mathf.Abs(charge - directValue);
-			var diffBank = Mathf.Abs(charge - bankValue);
+			var diffDirect = Mathf.Abs(charge - _directValue);
+			var diffBank = Mathf.Abs(charge - _bankValue);
 			
 			var perfectDirect = diffDirect <= perfectThreshold;
 			var perfectBank = diffBank <= perfectThreshold;
@@ -230,11 +230,11 @@ namespace Gameplay {
 			if (!ShotCalculator.CalculateBankShot(_shotStartPoint, _gm.hoop.position, _gm.backboard, _gm.maxHeight, out _bankShotVelocity))
 				Debug.LogWarning("Couldn't calculate bank shot!");
 
-			directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
-			bankValue = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+			_directValue = (1f - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
+			_bankValue = (_bankShotVelocity.magnitude / _directShotVelocity.magnitude - minPowerFraction) / (maxShotPowerMultiplier - minPowerFraction);
 
-			Debug.Log($"Values: {directValue} - {bankValue}");
-			gameEvents.OnPerfectZonesChanged.Invoke(directValue, bankValue, perfectThreshold);
+			Debug.Log($"Values: {_directValue} - {_bankValue}");
+			gameEvents.OnPerfectZonesChanged.Invoke(_directValue, _bankValue, perfectThreshold);
 		}
 		#endregion
 	}

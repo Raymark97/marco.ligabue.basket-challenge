@@ -55,7 +55,7 @@ namespace Systems {
         /// <param name="playerId">0 for Player, 1 for NPC.</param>
         /// <param name="perfect">Whether the shot was perfect.</param>
         /// <param name="backShot">Whether the shot hit the backboard.</param>
-        public void AddPoints(int playerId, bool perfect, bool backShot) {
+        private void AddPoints(int playerId, bool perfect, bool backShot) {
             var points = perfect ? perfectPoints : normalPoints;
             if (backShot) points += backboardBonus;
             
