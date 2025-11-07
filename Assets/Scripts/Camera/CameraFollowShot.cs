@@ -50,7 +50,7 @@ namespace Camera {
 		/// </summary>
 		private void OnEnable() {
 			gameEvents.OnBallThrown.AddListener(OnBallThrown);
-			gameEvents.OnScoreAdded.AddListener(OnShotEnded);
+			gameEvents.OnBasketMade.AddListener(OnShotEnded);
 			gameEvents.OnShotMiss.AddListener(OnShotEnded);
 		}
 
@@ -59,7 +59,7 @@ namespace Camera {
 		/// </summary>
 		private void OnDisable() {
 			gameEvents.OnBallThrown.RemoveListener(OnBallThrown);
-			gameEvents.OnScoreAdded.RemoveListener(OnShotEnded);
+			gameEvents.OnBasketMade.RemoveListener(OnShotEnded);
 			gameEvents.OnShotMiss.RemoveListener(OnShotEnded);
 		}
 

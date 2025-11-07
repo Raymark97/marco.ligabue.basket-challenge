@@ -104,7 +104,7 @@ namespace UI {
 		/// </summary>
 		/// <param name="playerId">Player identifier (0 for player, 1 for NPC).</param>
 		/// <param name="newScore">The new score value to display.</param>
-		public void UpdateScore(int playerId, int newScore) {
+		private void UpdateScore(int playerId, int newScore) {
 			if (playerId == 0)
 				playerScoreText.text = newScore.ToString();
 			else

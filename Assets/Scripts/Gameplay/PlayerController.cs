@@ -64,7 +64,7 @@ namespace Gameplay {
 		private void Start() {
 			_gm = GameManager.Instance;
 			gameEvents.OnFireStateChanged.AddListener(TrackFireballState);
-			gameEvents.OnScoreAdded.AddListener(OnScoreAdded);
+			gameEvents.OnBasketMade.AddListener(OnScoreAdded);
 			gameEvents.OnShotMiss.AddListener(OnShotMiss);
 
 		#if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR

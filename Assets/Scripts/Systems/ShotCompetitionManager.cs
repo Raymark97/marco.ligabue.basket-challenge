@@ -51,8 +51,8 @@ namespace Systems {
 		private int _npcIndex;
 		private Transform[] _shotPositions;
 
-		private void OnEnable() => gameEvents.OnScoreAdded.AddListener(OnScoreAdded);
-		private void OnDisable() => gameEvents.OnScoreAdded.RemoveListener(OnScoreAdded);
+		private void OnEnable() => gameEvents.OnBasketMade.AddListener(OnScoreAdded);
+		private void OnDisable() => gameEvents.OnBasketMade.RemoveListener(OnScoreAdded);
 
 		private void Start() {
 			_shotPositions = shotPositionGroup.Cast<Transform>().ToArray();

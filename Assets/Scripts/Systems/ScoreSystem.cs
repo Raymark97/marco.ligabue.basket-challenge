@@ -28,14 +28,14 @@ namespace Systems {
         private Coroutine _fireCoroutinePlayer, _fireCoroutineNPC;
 
         private void OnEnable() {
-            gameEvents.OnScoreAdded.AddListener(AddPoints);
+            gameEvents.OnBasketMade.AddListener(AddPoints);
             gameEvents.OnBackboardBonusUpdated.AddListener(SetBackboardBonus);
             gameEvents.OnShotMiss.AddListener(OnMiss);
             gameEvents.OnMatchEnded.AddListener(OnMatchEnded);
         }
 
         private void OnDisable() {
-            gameEvents.OnScoreAdded.RemoveListener(AddPoints);
+            gameEvents.OnBasketMade.RemoveListener(AddPoints);
             gameEvents.OnBackboardBonusUpdated.RemoveListener(SetBackboardBonus);
             gameEvents.OnShotMiss.RemoveListener(OnMiss);
             gameEvents.OnMatchEnded.RemoveListener(OnMatchEnded);
@@ -69,6 +69,7 @@ namespace Systems {
 
             var newScore = playerId == 0 ? _playerPoints : _npcPoints;
             gameEvents.OnScoreUpdated.Invoke(playerId, newScore);
+            gameEvents.OnScoreAdded.Invoke(playerId, points, perfect);
         }
 
         /// <summary>

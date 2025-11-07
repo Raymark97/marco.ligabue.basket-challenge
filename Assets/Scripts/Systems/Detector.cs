@@ -44,7 +44,7 @@ namespace Systems {
 			other.tag = "Untagged";
 
 			// Notify the global event system
-			gameEvents.OnScoreAdded.Invoke(playerId, ball.perfectShot, ball.bankShot);
+			gameEvents.OnBasketMade.Invoke(playerId, ball.perfectShot, ball.bankShot);
 
 			Debug.Log($"[Detector] Score detected for Player {playerId} (Perfect: {ball.perfectShot}, Bank: {ball.bankShot})");
 		}

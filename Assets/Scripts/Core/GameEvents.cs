@@ -7,7 +7,8 @@ namespace Core {
 		// ─────────────────────────────
 		//  SCORING & POINTS
 		// ─────────────────────────────
-		public UnityEvent<int, bool, bool> OnScoreAdded = new();			// (playerId, perfect, bankShot)
+		public UnityEvent<int, bool, bool> OnBasketMade = new();			// (playerId, perfect, bankShot)
+		public UnityEvent<int, int, bool> OnScoreAdded = new();				// (playerId, pointsAdded, perfect)
 		public UnityEvent<int, int> OnScoreUpdated = new();					// (playerId, totalScore)
 		public UnityEvent<int> OnBackboardBonusUpdated = new();				// (bonus amount)
 		public UnityEvent<int> OnTimerChanged = new();						// (playerId)
