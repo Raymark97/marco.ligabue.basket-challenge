@@ -2,8 +2,10 @@
 using Core;
 using Gameplay;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Systems {
 	/// <summary>
@@ -11,6 +13,15 @@ namespace Systems {
 	/// Handles positioning, scoring progression, match timing, and random bonuses.
 	/// </summary>
 	public class ShotCompetitionManager : MonoBehaviour {
+		[System.Serializable]
+		public struct BonusEntry {
+			public int value;
+			public int frequency;
+			public BonusEntry(int value, int frequency) {
+				this.value = value;
+				this.frequency = frequency;
+			}
+		}
 
 		[Header("References")]
 		[SerializeField] private GameEvents gameEvents;
@@ -26,9 +37,15 @@ namespace Systems {
 
 		[Header("Match Settings")]
 		[SerializeField] private int matchDuration = 90;
-		[SerializeField] private float bonusInitialDelay = 10f;
-		[SerializeField] private Vector2 bonusSpawnInterval = new(5f, 12f);
-		[SerializeField] private int[] bonusValues = { 4, 6, 8 };
+		[SerializeField] private Vector2 bonusDuration = new(5f, 10f);
+		[SerializeField] private Vector2 bonusSpawnInterval = new(5f, 10f);
+
+		[SerializeField, Tooltip("List of bonuses with their corresponding frequency. Higher frequency means higher chance to be selected.")]
+		private List<BonusEntry> bonusFrequencies = new() {
+		new(4, 8),
+		new(6, 8),
+		new(8, 4)
+		};
 
 		private int _playerIndex;
 		private int _npcIndex;
@@ -132,19 +149,26 @@ namespace Systems {
 			var npcPos = basePos.position + right * (sideOffset / 2f);
 			npc.transform.SetPositionAndRotation(npcPos, Quaternion.LookRotation(forward));
 		}
-		
+
 		#endregion
 
 		/// <summary>
 		/// Periodically activates random backboard bonuses during the match.
 		/// </summary>
 		private IEnumerator BonusRoutine() {
-			yield return new WaitForSeconds(bonusInitialDelay);
-
 			while (Application.isPlaying) {
 				yield return new WaitForSeconds(Random.Range(bonusSpawnInterval.x, bonusSpawnInterval.y));
-				var bonusValue = bonusValues[Random.Range(0, bonusValues.Length)];
+
+				var totalWeight = bonusFrequencies.Sum(b => b.frequency);
+				var r = Random.Range(0, totalWeight);
+				var cumulative = 0;
+
+				var bonusValue = bonusFrequencies
+				.First(b => (cumulative += b.frequency) > r)
+				.value;
 				gameEvents.OnBackboardBonusUpdated.Invoke(bonusValue);
+				yield return new WaitForSeconds(Random.Range(bonusDuration.x, bonusDuration.y));
+				gameEvents.OnBackboardBonusUpdated.Invoke(0);
 			}
 		}
 	}
