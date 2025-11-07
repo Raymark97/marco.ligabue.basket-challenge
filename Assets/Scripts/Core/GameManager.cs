@@ -28,5 +28,12 @@ namespace Core {
 		public void BackToMenu() {
 			SceneManager.LoadScene("MainMenu");
 		}
+		
+		/// <summary>
+		/// Restarts the current game scene.
+		/// </summary>
+		public void RestartGame() {
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		}
 	}
 }
