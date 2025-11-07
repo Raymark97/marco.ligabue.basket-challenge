@@ -58,11 +58,11 @@ namespace Systems {
         public void AddPoints(int playerId, bool perfect, bool backShot) {
             var points = perfect ? perfectPoints : normalPoints;
             if (backShot) points += backboardBonus;
-
-            AddFireCharge(playerId, perfect ? chargesPerShot * 2 : chargesPerShot);
-
+            
             if (IsFireActive(playerId))
                 points *= 2;
+            
+            AddFireCharge(playerId, perfect ? chargesPerShot * 2 : chargesPerShot);
 
             if (playerId == 0) _playerPoints += points;
             else _npcPoints += points;
